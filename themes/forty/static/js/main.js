@@ -84,6 +84,7 @@
 
 	};
 
+
 	$(function() {
 
 		var	$window = $(window),
@@ -339,8 +340,22 @@
 						if (event.keyCode == 27)
 							$menu._hide();
 
-				});
-
+				})
+		});
+	$(function() {
+		var $tiles = $('.tiles > article');
+                $tiles.each(function() {
+			$image = $(this).find('.image'), $img = $image.find('img')
+			const $src_url = $img.attr('src').split(".")[0];
+			const $src_gif = $src_url + '.gif';
+			$(this).hover(
+				function() {
+					$(this).css('background-image', 'url(' + $src_gif + ')');
+				},
+				function() {
+					$(this).css('background-image', 'url(' + $src_url + '.jpg' + ')');
+				}
+			);
+		});
 	});
-
 })(jQuery);
