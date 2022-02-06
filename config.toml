@@ -10,6 +10,12 @@ googleAnalytics = ""
 # Enter your disqus shortname to enable comments
 disqusShortname = ""
 
+# Allows us to add raw HTML to a page
+[markup]
+  [markup.goldmark.renderer]
+    unsafe=true
+    safeMode='unsafe' 
+
 [params]
   # You can use Markdown syntax for urls [text](//url.to/source)
   # To create multi-line text in strings use the """example Text""" format

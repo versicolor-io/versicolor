@@ -1,0 +1,30 @@
+<head>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
+</head>
+
+<body>
+<script>
+async function main() {
+    await loadPyodide({
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/"
+    });
+
+    pyodide.runPythonAsync(
+        `print('hello')`
+    );
+}
+main();
+</script>
+<div>
+        Slope of population line:
+        <input id="trueSlope" type="range" step=0.1 min=-5 max=5 oninput="this.nextElementSibling.value = ' ' + this.value"><output></output><br>
+        Size of training dataset:
+        <input id="trainSize" type="range" step=1 min=2 max=50 oninput="this.nextElementSibling.value = ' ' + this.value"><output></output><br>
+
+
+</div>
+</body>
+
+
