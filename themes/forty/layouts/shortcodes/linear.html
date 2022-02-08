@@ -1,30 +1,145 @@
 <head>
     <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
+    
+
+    <style>
+        * {
+          box-sizing: border-box;
+        }
+        
+        /* Create two equal columns that floats next to each other */
+        .column {
+          float: left;
+          width: 50%;
+          padding: 10px;
+          height: 300px; /* Should be removed. Only for demonstration */
+        }
+        
+        /* Clear floats after the columns */
+        .row:after {
+          content: "";
+          display: table;
+          clear: both;
+        }
+        </style>
 </head>
-
 <body>
-<script>
-async function main() {
-    await loadPyodide({
-        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/"
-    });
-
-    pyodide.runPythonAsync(
-        `print('hello')`
-    );
-}
-main();
-</script>
-<div>
+<div class="row">
+    <div class="column" id="inputs">
         Slope of population line:
-        <input id="trueSlope" type="range" step=0.1 min=-5 max=5 oninput="this.nextElementSibling.value = ' ' + this.value"><output></output><br>
+        <input id="trueSlope" type="range" step=0.1 min=-5 max=5 value=2 oninput="this.nextElementSibling.value = ' ' + this.value"><output> 2</output><br>
         Size of training dataset:
-        <input id="trainSize" type="range" step=1 min=2 max=50 oninput="this.nextElementSibling.value = ' ' + this.value"><output></output><br>
-
+        <input id="trainSize" type="range" step=1 min=2 max=50 value=25 oninput="this.nextElementSibling.value = ' ' + this.value"><output> 25</output><br>
+        Size of sampling error:
+        <input id="errorScale" type="range" step=1 min=25 max=75 value=50><output></output><br>
+    </div>
+    <div class="column" id="plotDiv">
+    </div>
 
 </div>
+<div id="trainX" style="visibility:hidden; height:0;">Loading...</div>
+<div id="trainY" style="visibility:hidden">Loading...</div>
+<script>
+    function linearRegression(x,y){
+        var lr = {};
+        var n = y.length;
+        var sum_x = 0;
+        var sum_y = 0;
+        var sum_xy = 0;
+        var sum_xx = 0;
+        var sum_yy = 0;
+
+        for (var i = 0; i < y.length; i++) {
+            sum_x += parseFloat(x[i]);
+            sum_y += parseFloat(y[i]);
+            sum_xy += (x[i]*y[i]);
+            sum_xx += (x[i]*x[i]);
+            sum_yy += (y[i]*y[i]);
+        }
+
+        lr['sl'] = (n * sum_xy - sum_x * sum_y) / (n*sum_xx - sum_x * sum_x);
+        lr['off'] = (sum_y - lr.sl * sum_x)/n;
+        lr['r2'] = Math.pow((n*sum_xy - sum_x*sum_y)/Math.sqrt((n*sum_xx-sum_x*sum_x)*(n*sum_yy-sum_y*sum_y)),2);
+
+        return lr;
+    }
+
+    async function main() {
+        const pyodide = await loadPyodide({
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/"
+        });
+
+        const update = function() {
+            console.log("in update js")
+            var py_vars = pyodide.globals.toJs();
+            var x = py_vars.get('TRAIN_X');
+            var y = py_vars.get('TRAIN_Y');
+            var slope = py_vars.get('SLOPE');
+            
+            var lr = linearRegression(x, y);
+        
+            var trace = {
+                x: x,
+                y: y,
+                mode: 'markers',
+                type: 'scatter',
+                xaxis: {
+                    range: [-5, 5]
+                },
+                yaxis: {
+                    range: [-10, 10]
+                }
+            };
+
+            var fit_from = Math.min(...x);
+            var fit_to = Math.max(...x);
+
+            var fit = {
+                x: [fit_from, fit_to],
+                y: [fit_from*lr.sl+lr.off, fit_to*lr.sl+lr.off],
+                mode: 'lines',
+                type: 'scatter',
+                name: "R2=".concat((Math.round(lr.r2 * 10000) / 10000).toString())
+            };
+
+            var truePop = {
+                x:x,
+                y:slope*y,
+                name:"Population",
+                type:"lines"
+            }
+
+            var data = [trace, fit];
+            Plotly.react(document.getElementById('plotDiv'), data);
+        };
+    
+        const script = await fetch("/python/linear-regression.py");
+        const scriptText = await script.text();
+    
+        await pyodide.loadPackage(["pandas", "micropip", "numpy", "matplotlib"])
+
+        var result = await pyodide.runPythonAsync(
+            scriptText
+        );
+        update();
+        const inp1 = document.getElementById('trueSlope');
+        const inp2 = document.getElementById('trainSize');
+        const inp3 = document.getElementById('errorScale');
+        inp1.addEventListener("change", update);
+        inp2.addEventListener("change", update);
+        inp3.addEventListener("change", update);
+        return result;
+    }
+    main();
+
+    
+
+
+
+
+    
+    </script>
 </body>
-
-

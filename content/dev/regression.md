@@ -9,5 +9,5 @@ The goal is to understand a bit more about how Pyodide works, by attempting to i
 
 A user will be able to input their desired parameters and train a model... ideally.
 
-## Inputs
+## Edit the inputs to modify the regression plot!
 {{<linear>}}
