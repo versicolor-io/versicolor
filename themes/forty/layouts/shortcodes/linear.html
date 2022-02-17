@@ -32,9 +32,11 @@
         Slope of population line:
         <input id="trueSlope" type="range" step=0.1 min=-5 max=5 value=2 oninput="this.nextElementSibling.value = ' ' + this.value"><output> 2</output><br>
         Size of training dataset:
-        <input id="trainSize" type="range" step=1 min=2 max=50 value=25 oninput="this.nextElementSibling.value = ' ' + this.value"><output> 25</output><br>
-        Size of sampling error:
-        <input id="errorScale" type="range" step=1 min=25 max=75 value=50><output></output><br>
+        <input id="trainSize" type="range" step=1 min=2 max=25 value=10 oninput="this.nextElementSibling.value = ' ' + this.value"><output> 10</output><br>
+        Sample standard deviation:
+        <input id="stdDev" type="range" step=0.1 min=0 max=4 value=1 oninput="this.nextElementSibling.value = ' ' + this.value"><output> 1</output><br><br><br>
+        <input id="showFit" type="button" value="Show fit line">
+        <input id="showPop" type="button" value="Show true line">
     </div>
     <div class="column" id="plotDiv">
     </div>
@@ -72,12 +74,19 @@
             indexURL: "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/"
         });
 
+        function roundToTwo(num) {    
+            return +(Math.round(num + "e+2")  + "e-2");
+        }
+
         const update = function() {
             console.log("in update js")
             var py_vars = pyodide.globals.toJs();
             var x = py_vars.get('TRAIN_X');
             var y = py_vars.get('TRAIN_Y');
             var slope = py_vars.get('SLOPE');
+            var fit_coef = py_vars.get('FIT_SLOPE');
+            var fit_intercept = py_vars.get('FIT_INTERCEPT');
+            var r_sq = roundToTwo(py_vars.get('R_SQ'));
             
             var lr = linearRegression(x, y);
         
@@ -86,51 +95,109 @@
                 y: y,
                 mode: 'markers',
                 type: 'scatter',
-                xaxis: {
-                    range: [-5, 5]
-                },
-                yaxis: {
-                    range: [-10, 10]
+                name: "Sample Data",
+                marker: {
+                    color: 'rgb(142, 124, 195)',
+                    size: 12
                 }
             };
 
-            var fit_from = Math.min(...x);
-            var fit_to = Math.max(...x);
+            var fit_from = -5;
+            var fit_to = 5;
+
 
             var fit = {
                 x: [fit_from, fit_to],
-                y: [fit_from*lr.sl+lr.off, fit_to*lr.sl+lr.off],
+                y: [fit_from*fit_coef + fit_intercept, fit_to*fit_coef + fit_intercept],
                 mode: 'lines',
                 type: 'scatter',
-                name: "R2=".concat((Math.round(lr.r2 * 10000) / 10000).toString())
+                name: "Fit, R2=".concat(r_sq),
+                line: {
+                    color: 'rgb(142, 124, 195)',
+                    width: 1
+                }
             };
 
-            var truePop = {
-                x:x,
-                y:slope*y,
-                name:"Population",
-                type:"lines"
+            var layout = {
+                xaxis: {
+                    autorange: false,
+                    fixedrange: true,
+                    range: [-5,5]
+                },
+                yaxis: {
+                    autorange: false,
+                    fixedrange: true,
+                    range: [-10,10]
+                },
+                margin: {
+                    t: 20, //top margin
+                    l: 20, //left margin
+                    r: 20, //right margin
+                    b: 20 //bottom margin
+                }
             }
 
-            var data = [trace, fit];
-            Plotly.react(document.getElementById('plotDiv'), data);
+            var truePop = {
+                x:[fit_from, fit_to],
+                y:[fit_from * slope, fit_to * slope],
+                name:"Population",
+                type:"lines",
+                line: {
+                    color: 'rgb(234, 153, 153)',
+                    width: 1
+                },
+            }
+
+            var data = [trace];
+            if (document.getElementById('showFit').value == 'Hide fit line') {
+                data = data.concat([fit]);
+            }
+            if (document.getElementById('showPop').value == 'Hide true line') {
+                data = data.concat([truePop]);
+            }
+            Plotly.react(document.getElementById('plotDiv'), data, layout);
         };
     
         const script = await fetch("/python/linear-regression.py");
         const scriptText = await script.text();
     
-        await pyodide.loadPackage(["pandas", "micropip", "numpy", "matplotlib"])
+        await pyodide.loadPackage(["pandas", "micropip", "numpy", "matplotlib", "scikit-learn"])
 
         var result = await pyodide.runPythonAsync(
             scriptText
         );
         update();
+
+        const showFit = function() {
+            var button = document.getElementById('showFit');
+            if (button.value == 'Show fit line') {
+                button.value = 'Hide fit line';
+            } else {
+                button.value = 'Show fit line';
+            }
+            update();
+        }
+
+        const showPop = function() {
+            var button = document.getElementById('showPop');
+            if (button.value == 'Show true line') {
+                button.value = 'Hide true line';
+            } else {
+                button.value = 'Show true line';
+            }
+            update();
+        }
+
         const inp1 = document.getElementById('trueSlope');
         const inp2 = document.getElementById('trainSize');
-        const inp3 = document.getElementById('errorScale');
+        const inp3 = document.getElementById('stdDev');
+        const inp4 = document.getElementById('showFit');
+        const inp5 = document.getElementById('showPop');
         inp1.addEventListener("change", update);
         inp2.addEventListener("change", update);
         inp3.addEventListener("change", update);
+        inp4.addEventListener("click", showFit);
+        inp5.addEventListener("click", showPop);
         return result;
     }
     main();
