@@ -5,6 +5,7 @@ draft: false
 ---
 
 We are going to walk through an example to learn more about how linear regression works!
+{{<colors>}}
 
 {{<buttons>}}
 

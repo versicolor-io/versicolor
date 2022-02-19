@@ -2,7 +2,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
-<body>
     
     <div class="row" id="start-button-div" style="opacity: 0;">
         <input id="startbtn" type="button" value="START" style="margin-left: 25px;">
@@ -16,9 +15,10 @@
         </div>
     </div>
     <div id="stage" style="display: none;">0</div>
-</body>
 
 <script>
+    var curr_x = [];
+    var curr_y = [];
     $("#start-button-div").delay(2000).animate({"opacity": "1"}, 700);
 
     document.getElementById('startbtn').addEventListener("click", () => {

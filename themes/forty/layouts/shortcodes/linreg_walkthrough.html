@@ -5,76 +5,105 @@
     <div id="section-title">
         <h2></h2>
     </div>
-    <div id="body">
-        <div id="text" style="align:left;"></div>
+    <div id="body" style="height:max-content">
+        <div id="text" style="min-height: 200px; max-height: 200px;"></div>
         <div id="plot" style="align:right;"></div>
     </div>
 </body>
 
 
 <script>
-function readTextFile(file, callback) {
-    var rawFile = new XMLHttpRequest();
-    rawFile.overrideMimeType("application/json");
-    rawFile.open("GET", file, true);
-    rawFile.onreadystatechange = function() {
-        if (rawFile.readyState === 4 && rawFile.status == "200") {
-            callback(rawFile.responseText);
-        }
-    }
-    rawFile.send(null);
-}
-
-var stages = [];
-
-//usage:
-readTextFile("/json/linreg.json", function(text){
-    stages = JSON.parse(text);
-});
-
-function makePlot(x, y) {
-    var trace = {
-        x: x,
-        y: y,
-        mode: 'markers',
-        type: 'scatter',
-        name: "Sample Data",
-        marker: {
-            color: 'rgb(142, 124, 195)',
-            size: 12
-        }
-    };
-    var layout = {
-                xaxis: {
-                    autorange: false,
-                    fixedrange: true,
-                    range: [-5,5]
-                },
-                yaxis: {
-                    autorange: false,
-                    fixedrange: true,
-                    range: [-5,5]
-                },
-                margin: {
-                    t: 20, //top margin
-                    l: 20, //left margin
-                    r: 20, //right margin
-                    b: 20 //bottom margin
-                }
+    function readTextFile(file, callback) {
+        var rawFile = new XMLHttpRequest();
+        rawFile.overrideMimeType("application/json");
+        rawFile.open("GET", file, true);
+        rawFile.onreadystatechange = function () {
+            if (rawFile.readyState === 4 && rawFile.status == "200") {
+                callback(rawFile.responseText);
             }
-    var data = [trace];
-    Plotly.react(document.getElementById('plot'), data, layout);
-}
+        }
+        rawFile.send(null);
+    }
 
-function update(stage) {
-    var data = stages[stage];
-    document.getElementById('section-title').innerHTML = "<h2>" + data.title + "</h2>";
-    document.getElementById('text').innerHTML = data.text;
-    console.log(data)
+    var stages = [];
 
-    makePlot(data.x, data.y);
-    
-}
+    //usage:
+    readTextFile("/json/linreg.json", function (text) {
+        stages = JSON.parse(text);
+    });
+
+    function makePlot() {
+        console.log(curr_x);
+        console.log(curr_y);
+        var trace = {
+            x: curr_x,
+            y: curr_y,
+            mode: 'markers',
+            type: 'scatter',
+            name: "Sample Data",
+            marker: {
+                color: lightBlue,
+                size: 12
+            }
+        };
+        var layout = {
+            xaxis: {
+                autorange: true,
+                fixedrange: true,
+                showgrid: false,
+            },
+            yaxis: {
+                autorange: true,
+                fixedrange: true,
+                showgrid: false,
+            },
+            margin: {
+                t: 20, //top margin
+                l: 20, //left margin
+                r: 20, //right margin
+                b: 20 //bottom margin
+            },
+            paper_bgcolor:'rgba(0,0,0,0)',
+            plot_bgcolor:'rgba(0,0,0,0)'
+        }
+        var data = [trace];
+        Plotly.react(document.getElementById('plot'), data, layout);
+    }
+
+    function fadeInAndOut(data) {
+        // fade out existing title and text
+        $("#section-title").delay(500).animate({"opacity": "0"}, 100);
+        $("#text").delay(500).animate({"opacity": "0"}, 100);
+        setTimeout(() => {
+            document.getElementById('section-title').style = "opacity:0;";
+            document.getElementById('text').style = "opacity:0;";
+            document.getElementById('section-title').innerHTML = "<h2>" + data.title + "</h2>";
+            document.getElementById('text').innerHTML = data.text.join('<br><br>');
+            $("#section-title").delay(500).animate({"opacity": "1"}, 700);
+            $("#text").delay(500).animate({"opacity": "1"}, 700);
+        }, 650);
+    }
+
+    function update(stage) {
+        var data = stages[stage];
+
+        var prev_x = curr_x;
+        var prev_y = curr_y;
+
+        curr_x = data.x;
+        curr_y = data.y;
+        
+        fadeInAndOut(data);
+        // if there's no data yet, don't show the plot!
+        if (curr_x.length == 0 || curr_y.length == 0) {
+            document.getElementById('plot').style = 'visibility:hidden;'
+        } else {
+            document.getElementById('plot').style = ''
+        }
+        
+        makePlot();
+        
+    }
 
 
 </script>

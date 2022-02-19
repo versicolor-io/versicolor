@@ -1,25 +1,42 @@
 [
     {
-        "stage": 0,
         "title": "",
-        "text": ""
+        "text": [""]
     },
     {
-        "stage": 1,
-        "title": "Hello there",
-        "text": "Let's try to make a plot",
-        "x": [2, 0, -1, 5, 4, -4, -2],
-        "y": [1, 0, -1.5, 3, 4.5, -2, -2.5]
+        "title": "Let's get started",
+        "text": [
+            "Linear regression is a simple yet powerful way of estimating the relationship between variables. In <i>simple linear regression</i> we have a <b>predictor</b>, X, and a <b>response</b>, Y.",
+            "For example, let's say I want to measure the relationship between the number of times I pat my dog's head (the <b>predictor variable</b>) and her happiness - the number of times she wags her tail (the <b>response variable</b>).",
+            "- <b>X (predictor)</b>: number of pats<br>- <b>Y (response)</b>: number of wags"
+        ],
+        "x": [],
+        "y": []
     },
     {
-        "stage": 2,
-        "title": "Next step?",
-        "text": "Let's add some more points!",
-        "x": [2, 0, -1, 5, 4, -4, -2, 2, 1, 0.5, 3],
-        "y": [1, 0, -1.5, 3, 4.5, -2, -2.5, 3, 1, 0, 4]
+        "title": "Variables",
+        "text": [
+            "For example, let's say I want to measure the relationship between the number of times I pat my dog's head (the <b>predictor variable</b>) and her happiness - the number of times she wags her tail (the <b>response variable</b>).",
+            "- <b>X (predictor)</b>: number of pats<br>- <b>Y (response)</b>: number of wags"
+        ],
+        "x": [],
+        "y": []
     },
     {
-        "stage": 3,
-        "title": "Step three!"
+        "title": "Predictor Variable",
+        "text": [
+            "To start, I'll do an experiment, in which I pat her head multiple times. She enjoys this experiment a lot.",
+            "The X axis will represent the number of times I patted her head during each trial. Let's plot those points now."
+        ],
+        "x": [1, 2, 3, 4, 5, 6, 6, 7, 9 , 11],
+        "y": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+        "title": "Response Variable",
+        "text": [
+            "Each of these <b>predictor</b> variables has a <b>response</b> associated with it. For each time I give her a certain number of pats, I count the number of wags. We can plot them on the same graph, with the wags being the new Y axis."
+        ],
+        "x": [1, 2, 3, 4, 5, 6, 6, 7, 9 , 11],
+        "y": [1, 3, 2, 4.5, 5, 7, 6, 8, 8.5, 10]
     }
 ]
