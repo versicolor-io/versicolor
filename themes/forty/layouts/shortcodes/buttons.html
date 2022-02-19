@@ -1,0 +1,29 @@
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    
+    <div class="row" id="start-button-div" style="opacity: 0;">
+        <input id="startbtn" type="button" value="START" style="margin-left: 25px;">
+    </div>
+    <div class="row" style="display: none;" id="stage-buttons" style="margin-left: 25px;">
+        <div class="column" id="back" style="align:left">
+            <input id="backbtn" type="button" value="BACK">
+        </div>
+        <div class="column" id="next" style="align:right">
+            <input id="nextbtn" type="button" value="NEXT">
+        </div>
+    </div>
+</body>
+
+<script>
+    $("#start-button-div").delay(2000).animate({"opacity": "1"}, 700);
+
+    var stage = 0;
+
+    document.getElementById('startbtn').addEventListener("click", () => {
+        stage = 1;
+        update();
+    });
+</script>

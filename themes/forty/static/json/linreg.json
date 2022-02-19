@@ -1,0 +1,14 @@
+[
+    {
+        "stage": 1,
+        "title": "Hello there"
+    },
+    {
+        "stage": 2,
+        "title": "Next step?"
+    },
+    {
+        "stage": 3,
+        "title": "Step three!"
+    }
+]
