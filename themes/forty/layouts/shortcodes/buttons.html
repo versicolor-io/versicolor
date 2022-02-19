@@ -7,7 +7,7 @@
     <div class="row" id="start-button-div" style="opacity: 0;">
         <input id="startbtn" type="button" value="START" style="margin-left: 25px;">
     </div>
-    <div class="row" style="display: none;" id="stage-buttons" style="margin-left: 25px;">
+    <div class="row" style="display: none;" id="stage-buttons-div" style="margin-left: 25px;">
         <div class="column" id="back" style="align:left">
             <input id="backbtn" type="button" value="BACK">
         </div>
@@ -15,15 +15,32 @@
             <input id="nextbtn" type="button" value="NEXT">
         </div>
     </div>
+    <div id="stage" style="display: none;">0</div>
 </body>
 
 <script>
     $("#start-button-div").delay(2000).animate({"opacity": "1"}, 700);
 
-    var stage = 0;
-
     document.getElementById('startbtn').addEventListener("click", () => {
-        stage = 1;
-        update();
+        document.getElementById('stage').innerHTML = 1;
+        update(stage=1);
+        $("#start-button-div").delay(500).animate({"opacity": "0"}, 700);
+        setTimeout(() => {
+            document.getElementById('startbtn').style = "display:none;";
+            document.getElementById('stage-buttons-div').style = "opacity:0;";
+            $("#stage-buttons-div").delay(500).animate({"opacity": "1"}, 700);
+        }, 1000);
+    });
+
+    document.getElementById('nextbtn').addEventListener("click", () => {
+        var curr_stage = parseInt(document.getElementById('stage').innerHTML);
+        document.getElementById('stage').innerHTML = curr_stage + 1;
+        update(stage = curr_stage + 1);
+    });
+
+    document.getElementById('backbtn').addEventListener("click", () => {
+        var curr_stage = parseInt(document.getElementById('stage').innerHTML);
+        document.getElementById('stage').innerHTML = curr_stage - 1;
+        update(stage = curr_stage - 1);
     });
 </script>

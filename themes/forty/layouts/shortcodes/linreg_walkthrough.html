@@ -1,9 +1,80 @@
-<script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<body>
+    <br><br>
+    <div id="section-title">
+        <h2></h2>
+    </div>
+    <div id="body">
+        <div id="text" style="align:left;"></div>
+        <div id="plot" style="align:right;"></div>
+    </div>
+</body>
+
 
 <script>
-const stages = require('/json/linreg.json');
-console.log(stages);
+function readTextFile(file, callback) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.overrideMimeType("application/json");
+    rawFile.open("GET", file, true);
+    rawFile.onreadystatechange = function() {
+        if (rawFile.readyState === 4 && rawFile.status == "200") {
+            callback(rawFile.responseText);
+        }
+    }
+    rawFile.send(null);
+}
 
+var stages = [];
+
+//usage:
+readTextFile("/json/linreg.json", function(text){
+    stages = JSON.parse(text);
+});
+
+function makePlot(x, y) {
+    var trace = {
+        x: x,
+        y: y,
+        mode: 'markers',
+        type: 'scatter',
+        name: "Sample Data",
+        marker: {
+            color: 'rgb(142, 124, 195)',
+            size: 12
+        }
+    };
+    var layout = {
+                xaxis: {
+                    autorange: false,
+                    fixedrange: true,
+                    range: [-5,5]
+                },
+                yaxis: {
+                    autorange: false,
+                    fixedrange: true,
+                    range: [-5,5]
+                },
+                margin: {
+                    t: 20, //top margin
+                    l: 20, //left margin
+                    r: 20, //right margin
+                    b: 20 //bottom margin
+                }
+            }
+    var data = [trace];
+    Plotly.react(document.getElementById('plot'), data, layout);
+}
+
+function update(stage) {
+    var data = stages[stage];
+    document.getElementById('section-title').innerHTML = "<h2>" + data.title + "</h2>";
+    document.getElementById('text').innerHTML = data.text;
+    console.log(data)
+
+    makePlot(data.x, data.y);
+    
+}
 
 
 </script>

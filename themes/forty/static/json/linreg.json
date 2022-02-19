@@ -1,11 +1,22 @@
 [
     {
+        "stage": 0,
+        "title": "",
+        "text": ""
+    },
+    {
         "stage": 1,
-        "title": "Hello there"
+        "title": "Hello there",
+        "text": "Let's try to make a plot",
+        "x": [2, 0, -1, 5, 4, -4, -2],
+        "y": [1, 0, -1.5, 3, 4.5, -2, -2.5]
     },
     {
         "stage": 2,
-        "title": "Next step?"
+        "title": "Next step?",
+        "text": "Let's add some more points!",
+        "x": [2, 0, -1, 5, 4, -4, -2, 2, 1, 0.5, 3],
+        "y": [1, 0, -1.5, 3, 4.5, -2, -2.5, 3, 1, 0, 4]
     },
     {
         "stage": 3,
