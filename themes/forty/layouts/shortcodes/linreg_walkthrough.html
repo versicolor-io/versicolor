@@ -5,10 +5,8 @@
     <div id="section-title">
         <h2></h2>
     </div>
-    <div id="body" style="height:max-content">
-        <div id="text" style="min-height: 200px; max-height: 200px;"></div>
-        <div id="plot" style="align:right;"></div>
-    </div>
+    <div id="text" style="display:block;min-height: 200px;overflow:auto;opacity:1; width:65%;"></div>
+    <div id="plot"></div>
 </body>
 
 
@@ -32,30 +30,31 @@
         stages = JSON.parse(text);
     });
 
-    function makePlot() {
-        console.log(curr_x);
-        console.log(curr_y);
-        var trace = {
-            x: curr_x,
-            y: curr_y,
-            mode: 'markers',
-            type: 'scatter',
-            name: "Sample Data",
-            marker: {
-                color: lightBlue,
-                size: 12
-            }
-        };
+    function makePlot(data, traces) {
+        var prev_x = curr_x;
+        var prev_y = curr_y;
+
+        curr_x = data.x;
+        curr_y = data.y;
+        fadeInAndOut(data);
+        // if there's no data yet, don't show the plot!
+        if (curr_x.length == 0 || curr_y.length == 0) {
+            document.getElementById('plot').style = 'visibility:hidden;'
+        } else {
+            document.getElementById('plot').style = ''
+        }
+        var create = (prev_x.length == 0);
+
         var layout = {
             xaxis: {
-                autorange: true,
-                fixedrange: true,
+                autorange: false,
                 showgrid: false,
+                range:[Math.min(curr_x) - 1, Math.max(curr_x) + 1]
             },
             yaxis: {
-                autorange: true,
-                fixedrange: true,
+                autorange: false,
                 showgrid: false,
+                range:[Math.min(curr_y) - 1, Math.max(curr_y) + 1]
             },
             margin: {
                 t: 20, //top margin
@@ -66,8 +65,22 @@
             paper_bgcolor:'rgba(0,0,0,0)',
             plot_bgcolor:'rgba(0,0,0,0)'
         }
-        var data = [trace];
-        Plotly.react(document.getElementById('plot'), data, layout);
+        
+        if (create) {
+            Plotly.react(document.getElementById('plot'), data, layout);
+        } else {
+            console.log('animating the plot?')
+            Plotly.animate('plot', {data:data, traces:[0], layout:layout},
+            {
+                transition: {
+                    duration: 500,
+                    easing: 'cubic-in-out'
+                },
+                frame: {
+                    duration: 500
+                }
+            });
+        }
     }
 
     function fadeInAndOut(data) {
@@ -76,7 +89,7 @@
         $("#text").delay(500).animate({"opacity": "0"}, 100);
         setTimeout(() => {
             document.getElementById('section-title').style = "opacity:0;";
-            document.getElementById('text').style = "opacity:0;";
+            document.getElementById('text').style['opacity'] = 0;
             document.getElementById('section-title').innerHTML = "<h2>" + data.title + "</h2>";
             document.getElementById('text').innerHTML = data.text.join('<br><br>');
             $("#section-title").delay(500).animate({"opacity": "1"}, 700);
@@ -87,22 +100,19 @@
     function update(stage) {
         var data = stages[stage];
 
-        var prev_x = curr_x;
-        var prev_y = curr_y;
+        var trace = {
+            x: data.x,
+            y: data.y,
+            mode: 'markers',
+            type: 'scatter',
+            name: "Sample Data",
+            marker: {
+                color: lightBlue,
+                size: 12
+            }
+        };
 
-        curr_x = data.x;
-        curr_y = data.y;
-        
-        fadeInAndOut(data);
-        // if there's no data yet, don't show the plot!
-        if (curr_x.length == 0 || curr_y.length == 0) {
-            document.getElementById('plot').style = 'visibility:hidden;'
-        } else {
-            document.getElementById('plot').style = ''
-        }
-        
-        makePlot();
-        
+        makePlot(data, [trace]);
     }
 
 

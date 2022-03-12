@@ -1,14 +1,14 @@
 [
     {
         "title": "",
-        "text": [""]
+        "text": [""],
+        "x": [],
+        "y": []
     },
     {
         "title": "Let's get started",
         "text": [
-            "Linear regression is a simple yet powerful way of estimating the relationship between variables. In <i>simple linear regression</i> we have a <b>predictor</b>, X, and a <b>response</b>, Y.",
-            "For example, let's say I want to measure the relationship between the number of times I pat my dog's head (the <b>predictor variable</b>) and her happiness - the number of times she wags her tail (the <b>response variable</b>).",
-            "- <b>X (predictor)</b>: number of pats<br>- <b>Y (response)</b>: number of wags"
+            "Linear regression is a simple yet powerful way of estimating the relationship between variables."
         ],
         "x": [],
         "y": []
@@ -16,6 +16,15 @@
     {
         "title": "Variables",
         "text": [
+            "In <i>simple linear regression</i> we have a <b>predictor</b>, X, and a <b>response</b>, Y."
+        ],
+        "x": [],
+        "y": []
+    },
+    {
+        "title": "Variables",
+        "text": [
+            "Linear regression is a simple yet powerful way of estimating the relationship between variables. In <i>simple linear regression</i> we have a <b>predictor</b>, X, and a <b>response</b>, Y.",
             "For example, let's say I want to measure the relationship between the number of times I pat my dog's head (the <b>predictor variable</b>) and her happiness - the number of times she wags her tail (the <b>response variable</b>).",
             "- <b>X (predictor)</b>: number of pats<br>- <b>Y (response)</b>: number of wags"
         ],
