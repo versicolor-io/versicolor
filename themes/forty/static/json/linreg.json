@@ -1,51 +1,224 @@
-[
-    {
-        "title": "",
-        "text": [""],
-        "x": [],
-        "y": []
-    },
-    {
-        "title": "Let's get started",
-        "text": [
-            "Linear regression is a simple yet powerful way of estimating the relationship between variables."
-        ],
-        "x": [],
-        "y": []
-    },
-    {
-        "title": "Variables",
-        "text": [
-            "In <i>simple linear regression</i> we have a <b>predictor</b>, X, and a <b>response</b>, Y."
-        ],
-        "x": [],
-        "y": []
-    },
-    {
-        "title": "Variables",
-        "text": [
-            "Linear regression is a simple yet powerful way of estimating the relationship between variables. In <i>simple linear regression</i> we have a <b>predictor</b>, X, and a <b>response</b>, Y.",
-            "For example, let's say I want to measure the relationship between the number of times I pat my dog's head (the <b>predictor variable</b>) and her happiness - the number of times she wags her tail (the <b>response variable</b>).",
-            "- <b>X (predictor)</b>: number of pats<br>- <b>Y (response)</b>: number of wags"
-        ],
-        "x": [],
-        "y": []
-    },
-    {
-        "title": "Predictor Variable",
-        "text": [
-            "To start, I'll do an experiment, in which I pat her head multiple times. She enjoys this experiment a lot.",
-            "The X axis will represent the number of times I patted her head during each trial. Let's plot those points now."
-        ],
-        "x": [1, 2, 3, 4, 5, 6, 6, 7, 9 , 11],
-        "y": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    },
-    {
-        "title": "Response Variable",
-        "text": [
-            "Each of these <b>predictor</b> variables has a <b>response</b> associated with it. For each time I give her a certain number of pats, I count the number of wags. We can plot them on the same graph, with the wags being the new Y axis."
-        ],
-        "x": [1, 2, 3, 4, 5, 6, 6, 7, 9 , 11],
-        "y": [1, 3, 2, 4.5, 5, 7, 6, 8, 8.5, 10]
-    }
-]
+{
+    "stages": [
+        {
+            "title": "Hello",
+            "text": ["Hit the start button to begin!"],
+            "format": "none"
+        },
+        {
+            "title": "Let's get started",
+            "text": [
+                "Linear regression is a simple yet powerful way of estimating the relationship between variables."
+            ],
+            "format": "none"
+        },
+        {
+            "title": "Variables",
+            "text": [
+                "In <i>simple linear regression</i> we have a <b>predictor</b>, X, and a <b>response</b>, Y."
+            ],
+            "format": "img",
+            "img": {
+                "path": "/img/tutorials/lin-reg/1.gif"
+            }
+        },
+        {
+            "title": "Variables",
+            "text": [
+                "This comes up a lot in our lives without us even thinking about it. How does the number of hours of sleep I get correspond to the number of miles I'm able to run the next day? How does the number of red lights I hit impact how late I am for work? How does the number of cups of coffee I drink impact how many hours I'm able to sleep?",
+                "All of these questions can have their answers approximated by linear regression."
+            ],
+            "format": "img",
+            "img": {
+                "path": "/img/tutorials/lin-reg/1.gif"
+            }
+        },
+        {
+            "title": "Collecting the Data",
+            "text": [
+                "Let's say I haven't been sleeping well, and want to understand if coffee is the culprit. I'll start by drinking a different amount of coffee each day for a week, and measuring how many hours I sleep the following night. Here's the data I collected."
+            ],
+            "format": "plot",
+            "plot": {
+                "type": "table",
+                "traces": [
+                    {
+                        "type": "table",
+                        "header": {
+                            "values": [
+                                ["<b>Day</b>"],
+                                ["<b>Cups of Coffee</b>"],
+                                ["<b>Hours Slept</b>"]
+                            ],
+                            "align": "center",
+                            "line": {"width": 1, "color": "black"},
+                            "fill": {"color": "#87cefa"},
+                            "font": {"family": "Helvetica", "size": 16, "color": "white"}
+                        },
+                        "cells": {
+                            "values":[
+                                ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                                [0, 4, 2, 1, 6, 8, 3],
+                                [9, 6.5, 7.5, 8, 5.5, 4, 6.5]
+                            ],
+                            "align": "center",
+                            "height": 25,
+                            "line": {"color": "black"},
+                            "font": {"family": "Helvetica", "size": 16, "color": ["black"]}
+                        }
+                    }
+                ],
+                "layout": {
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor":"rgba(0,0,0,0)",
+                    "margin": {
+                        "t": 20, 
+                        "l": 20,
+                        "r": 20,
+                        "b": 20
+                    }
+                }
+            }
+        },
+        {
+            "title": "Collecting the Data",
+            "text": [
+                "Because we only care about the relationship between coffee and sleep right now, we can actually remove the days of the week."
+                ],
+            "format": "plot",
+            "plot": {
+                "type": "table",
+                "traces": [
+                    {
+                        "type": "table",
+                        "header": {
+                            "values": [
+                                ["<b>Cups of Coffee</b>"],
+                                ["<b>Hours Slept</b>"]
+                            ],
+                            "align": "center",
+                            "line": {"width": 1, "color": "black"},
+                            "fill": {"color": "#87cefa"},
+                            "font": {"family": "Helvetica", "size": 16, "color": "white"}
+                        },
+                        "columnwidth": [0.1,0.1,0.1,0.1,0.1],
+                        "cells": {
+                            "values":[[0,   4,   2, 1,   6, 8, 3],
+                            [10, 6, 7.5, 9, 3.5, 3, 5]
+                            ],
+                            "align": "center",
+                            "height": 25,
+                            "line": {"color": "black"},
+                            "font": {"family": "Helvetica", "size": 16, "color": ["black"]}
+                        }
+                    }
+                ],
+                "layout": {
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor":"rgba(0,0,0,0)",
+                    "margin": {
+                        "t": 20, 
+                        "l": 20,
+                        "r": 20,
+                        "b": 20
+                    }
+                }
+            }
+        },
+        {
+            "title": "Visualizing the Data",
+            "text": [
+                "Now we can plot our data. Our <b>predictor</b> variable will go on the X axis..."
+            ],
+            "format": "plot",
+            "plot": {
+                "type": "scatter",
+                "traces": [
+                    {
+                        "type": "scatter",
+                        "x": [0, 4, 2, 1, 6, 8, 3],
+                        "y": [0, 0, 0, 0, 0, 0, 0],
+                        "mode": "markers",
+                        "name": "Coffee and Sleep",
+                        "marker": {
+                            "color": "#87cefa",
+                            "size": 12
+                        }
+                    }
+                ],
+                "layout": {
+                    "xaxis": {
+                        "autorange": true,
+                        "showgrid": false,
+                        "color": "white",
+                        "tickmode": "linear",  
+                        "tick0": 1,
+                        "dtick": 1,
+                        "tickangle": 0
+                    },
+                    "yaxis": {
+                        "autorange": true,
+                        "showgrid": false,
+                        "color": "white",
+                        "tickmode": "linear",  
+                        "tick0": 1,
+                        "dtick": 1
+                    },
+                    "margin": {
+                        "t": 20
+                    },
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor":"rgba(0,0,0,0)"
+                }
+            }
+        },
+        {
+            "title": "Visualizing the Data",
+            "text": [
+                "Now we can plot our data. Our <b>predictor</b> variable will go on the X axis...",
+                "and the <b>response</b> variable will go on the Y axis."
+            ],
+            "animate_text": false,
+            "format": "plot",
+            "plot": {
+                "type": "scatter",
+                "traces": [
+                    {
+                        "type": "scatter",
+                        "x": [0, 4, 2, 1, 6, 8, 3],
+                        "y": [10, 6, 7.5, 9, 3.5, 3, 5],
+                        "mode": "markers",
+                        "name": "Coffee and Sleep",
+                        "marker": {
+                            "color": "#87cefa",
+                            "size": 12
+                        }
+                    }
+                ],
+                "layout": {
+                    "xaxis": {
+                        "autorange": true,
+                        "showgrid": false,
+                        "range":[-0.5, 9],
+                        "color": "white",
+                        "tickmode": "linear",  
+                        "tick0": 1,
+                        "dtick": 1,
+                        "tickangle": 0
+                    },
+                    "yaxis": {
+                        "autorange": false,
+                        "showgrid": false,
+                        "range":[-0.5, 10.5],
+                        "color": "white",
+                        "tickmode": "linear",  
+                        "tick0": 1,
+                        "dtick": 1
+                    },
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor":"rgba(0,0,0,0)"
+                }
+            }
+        }
+    ]
+}

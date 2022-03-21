@@ -10,7 +10,7 @@ Each state must have the following fields in the following formats.
 - `text` (list of strings)
     - Text must be a list of strings. Each list of items represents a new paragraph. The text item must contain at least one element, and it can be an empty string if there is nothing to display
 - `format` (string)
-    - Either `"plot"` or `"image"`. As of right now, other options will simply display nothing, as will not including this field. 
+    - Either `"plot"`, `"image"` or `"none"`.
 
 ### Optional Fields
 - `plot` (dictionary)

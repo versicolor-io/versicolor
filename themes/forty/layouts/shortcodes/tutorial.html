@@ -1,46 +1,236 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
     
-    <div class="row" id="start-button-div" style="opacity: 0;">
+    <div id="stage" style="display: none;">0</div>
+    <body>
+        <br><br>
+        <div id="section-title">
+            <h2></h2>
+        </div>
+        <div id="content" style="display:block;min-height: 350px;max-height:350px;overflow:auto; padding:20px">
+            <div id="text" style="opacity:1; width: 40%; float: left; padding-right:1px;"></div>
+            <div id="plot" style="width: 40%; float: left;  padding-left:100px;min-height: inherit;"></div>
+        </div>
+    </body>
+    <div class="row" id="start-button-div" style="opacity: 0;margin-left: 25px;">
         <input id="startbtn" type="button" value="START" style="margin-left: 25px;">
     </div>
-    <div class="row" style="display: none;" id="stage-buttons-div" style="margin-left: 25px;">
-        <div class="column" id="back" style="align:left">
-            <input id="backbtn" type="button" value="BACK">
+    <div class="row" style="visibility: hidden;margin-left: 25px;" id="stage-buttons-div">
+        <div class="column" id="stage-buttons-div" style="align:left">
+            <input id="backbtn" type="button" value="<">
         </div>
         <div class="column" id="next" style="align:right">
-            <input id="nextbtn" type="button" value="NEXT">
+            <input id="nextbtn" type="button" value=">">
         </div>
     </div>
-    <div id="stage" style="display: none;">0</div>
 
 <script>
-    var curr_x = [];
-    var curr_y = [];
-    $("#start-button-div").delay(2000).animate({"opacity": "1"}, 700);
+    var curr_stage = {};
+    var metadata = {};
+    var stages = [];
+
+    function readTextFile(file, callback) {
+        var rawFile = new XMLHttpRequest();
+        rawFile.overrideMimeType("application/json");
+        rawFile.open("GET", file, true);
+        rawFile.onreadystatechange = function () {
+            if (rawFile.readyState === 4 && rawFile.status == "200") {
+                callback(rawFile.responseText);
+            }
+        }
+        rawFile.send(null);
+    }
+
+    function updateStageWithDefaults(curr_stage) {
+        // look at defaults in JSON and fills curr_stage with keys
+        // that are in default. Anything in default that is already in
+        // the stage will not be overwritten with default.
+
+        
+        
+    }
+
+    function makePlot(prev_stage, curr_stage) {
+        // only use Plotly.animate if the plot already exists and is same type as prev
+        var create = ((prev_stage['format'] != "plot") || 
+                      (prev_stage['plot']['type'] != curr_stage['plot']['type']));
+        console.log(create);
+        if (create) {
+            document.getElementById('plot').innerHTML='';
+        }
+
+        try {
+            var layout = curr_stage['plot']['layout'];
+        } catch {
+            var layout = {};
+        }
+        
+        var data = curr_stage['plot']['traces'];
+        console.log(data);
+        console.log(layout)
+
+        if (curr_stage['plot']['type'] == 'scatter') {
+            document.getElementById('plot').style.width = "60%";
+        }
+        if (create) {
+            console.log("in create")
+            Plotly.react(document.getElementById('plot'), data, layout);
+        } else {
+            console.log('animating the plot?')
+            Plotly.animate('plot', {data:data, traces:[0], layout:layout},
+            {
+                transition: {
+                    duration: 500,
+                    easing: 'cubic-in-out'
+                },
+                frame: {
+                    duration: 500
+                }
+            });
+        }
+    }
+
+    function makeImg(prev_stage, curr_stage) {
+        var fade = true;
+        if (prev_stage['format'] == 'img' && prev_stage['img']['path'] == curr_stage['img']['path']) {
+            fade = false;
+        }
+        document.getElementById('plot').innerHTML = "<img src=" + 
+                        curr_stage['img']['path'] +
+                        " />"
+    }
+
+    function fillPlotDiv(prev_stage, curr_stage) {
+        // Check for stage type
+        try {
+            var format = curr_stage['format'];
+        } catch(error) {
+            console.log('No format specified, displaying text only');
+        }
+
+        if (format == "plot") {
+            makePlot(prev_stage, curr_stage);
+        }
+        if (format == "img") {
+            makeImg(prev_stage, curr_stage);
+        }
+    }
+
+    function transition(prev_stage, curr_stage) {
+        var animate_text = curr_stage.animate_text ?? true;
+        console.log("animate_text" + animate_text);
+
+        // fade out existing title and text
+        if (animate_text) {
+            $("#section-title").delay(500).animate({"opacity": "0"}, 100);
+            $("#text").delay(500).animate({"opacity": "0"}, 100);
+        }
+        // do not fade plot div if same img path or if plot for both
+        // plotly should animate the transition
+        var animate_plot = true;
+
+        var has_prev = Object.keys(prev_stage).length > 0;
+
+        console.log(curr_stage);
+        if (has_prev && (prev_stage['format'] == 'img' & curr_stage['format'] == 'img' &&
+            prev_stage['img']['path'] == curr_stage['img']['path']) ||
+            (prev_stage['format'] == 'plot' && curr_stage['format'] == 'plot') &&
+             prev_stage['plot']['type'] == curr_stage['plot']['type']) {
+                animate_plot = false;
+            } 
+
+        if (animate_plot) {
+            $("#plot").delay(500).animate({"opacity": "0"}, 100);
+        }
+        
+        setTimeout(() => {
+            if (animate_text) {
+                document.getElementById('section-title').style['opacity'] =0;
+                document.getElementById('text').style['opacity'] = 0;
+            }
+            
+            document.getElementById('section-title').innerHTML = "<h2>" + curr_stage.title + "</h2>";
+            document.getElementById('text').innerHTML = curr_stage.text.join('<br><br>');
+
+            if (animate_plot) { document.getElementById('plot').style['opacity'] = 0;}
+            fillPlotDiv(prev_stage, curr_stage);
+            
+            if (animate_text) {
+                $("#section-title").delay(500).animate({"opacity": "1"}, 700);
+                $("#text").delay(500).animate({"opacity": "1"}, 700);
+            }
+            
+            if (animate_plot) { $("#plot").delay(500).animate({"opacity": "1"}, 700); }
+        }, 650);
+    }
+
+    function update(stage) {
+        var prev_stage = curr_stage;
+        curr_stage = stages[stage];
+        console.log(stages);
+
+        transition(prev_stage, curr_stage);
+    }
+    
+    
+    $("#start-button-div").delay(500).animate({"opacity": "1"}, 500);
+    setTimeout(() => {
+        update(0);
+    }, 500);
 
     document.getElementById('startbtn').addEventListener("click", () => {
         document.getElementById('stage').innerHTML = 1;
         update(stage=1);
-        $("#start-button-div").delay(500).animate({"opacity": "0"}, 700);
+        $("#start-button-div").delay(500).animate({"opacity": "0"}, 500);
         setTimeout(() => {
-            document.getElementById('startbtn').style = "display:none;";
-            document.getElementById('stage-buttons-div').style = "opacity:0;";
-            $("#stage-buttons-div").delay(500).animate({"opacity": "1"}, 700);
-        }, 1000);
+            document.getElementById('startbtn').style.display = "none";
+            document.getElementById('stage-buttons-div').style.opacity = 0;
+            document.getElementById('stage-buttons-div').style.visibility = 'visible';
+            $("#stage-buttons-div").delay(500).animate({"opacity": "1"}, 500);
+        }, 5);
     });
 
-    document.getElementById('nextbtn').addEventListener("click", () => {
+    function next_stage() {
         var curr_stage = parseInt(document.getElementById('stage').innerHTML);
         document.getElementById('stage').innerHTML = curr_stage + 1;
         update(stage = curr_stage + 1);
-    });
+    }
 
-    document.getElementById('backbtn').addEventListener("click", () => {
+    function prev_stage() {
         var curr_stage = parseInt(document.getElementById('stage').innerHTML);
         document.getElementById('stage').innerHTML = curr_stage - 1;
         update(stage = curr_stage - 1);
-    });
+    }
+
+    function checkKey(e) {
+        e = e || window.event;
+
+        if (e.keyCode == '38') {
+            // up arrow, back
+            prev_stage();
+        }
+        else if (e.keyCode == '40') {
+            // down arrow, next
+            next_stage();
+        }
+        else if (e.keyCode == '37') {
+            // left arrow
+            prev_stage();
+        }
+        else if (e.keyCode == '39') {
+            // right arrow
+            next_stage();
+        }
+    }
+
+    document.getElementById('nextbtn').addEventListener("click", next_stage);
+
+    document.getElementById('backbtn').addEventListener("click", prev_stage);
+
+    document.onkeydown = checkKey;
+
+
 </script>
