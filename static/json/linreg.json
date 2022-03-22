@@ -46,7 +46,6 @@
                         "type": "table",
                         "header": {
                             "values": [
-                                ["<b>Day</b>"],
                                 ["<b>Cups of Coffee</b>"],
                                 ["<b>Hours Slept</b>"]
                             ],
@@ -56,54 +55,7 @@
                             "font": {"family": "Helvetica", "size": 16, "color": "white"}
                         },
                         "cells": {
-                            "values":[
-                                ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-                                [0, 4, 2, 1, 6, 8, 3],
-                                [9, 6.5, 7.5, 8, 5.5, 4, 6.5]
-                            ],
-                            "align": "center",
-                            "height": 25,
-                            "line": {"color": "black"},
-                            "font": {"family": "Helvetica", "size": 16, "color": ["black"]}
-                        }
-                    }
-                ],
-                "layout": {
-                    "paper_bgcolor": "rgba(0,0,0,0)",
-                    "plot_bgcolor":"rgba(0,0,0,0)",
-                    "margin": {
-                        "t": 20, 
-                        "l": 20,
-                        "r": 20,
-                        "b": 20
-                    }
-                }
-            }
-        },
-        {
-            "title": "Collecting the Data",
-            "text": [
-                "Because we only care about the relationship between coffee and sleep right now, we can actually remove the days of the week."
-                ],
-            "format": "plot",
-            "plot": {
-                "type": "table",
-                "traces": [
-                    {
-                        "type": "table",
-                        "header": {
-                            "values": [
-                                ["<b>Cups of Coffee</b>"],
-                                ["<b>Hours Slept</b>"]
-                            ],
-                            "align": "center",
-                            "line": {"width": 1, "color": "black"},
-                            "fill": {"color": "#87cefa"},
-                            "font": {"family": "Helvetica", "size": 16, "color": "white"}
-                        },
-                        "columnwidth": [0.1,0.1,0.1,0.1,0.1],
-                        "cells": {
-                            "values":[[0,   1, 2, 3, 4, 5, 6, 7],
+                            "values":[[0, 1, 2, 3, 4, 5, 6],
                             [10, 9, 7.5, 5, 6, 3.5, 3]
                             ],
                             "align": "center",
@@ -125,6 +77,7 @@
                 }
             }
         },
+        
         {
             "title": "Visualizing the Data",
             "text": [
@@ -185,7 +138,7 @@
                 "traces": [
                     {
                         "type": "scatter",
-                        "x": [0, 4, 2, 1, 6, 8, 3],
+                        "x": [0, 1, 2, 3, 4, 5, 6],
                         "y": [10, 9, 7.5, 5, 6, 3.5, 3],
                         "mode": "markers",
                         "name": "Coffee and Sleep",
@@ -232,8 +185,8 @@
                 "traces": [
                     {
                         "type": "scatter",
-                        "x": [0, 4, 2, 1, 6, 8, 3],
-                        "y": [10, 6, 7.5, 9, 3.5, 3, 5],
+                        "x": [0, 1, 2, 3, 4, 5, 6],
+                        "y": [10, 9, 7.5, 5, 6, 3.5, 3],
                         "mode": "markers",
                         "name": "Coffee and Sleep",
                         "marker": {
