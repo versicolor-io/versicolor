@@ -9,7 +9,7 @@
         <br><br>
         <div id="content" style="display:block;min-height: 350px;max-height:350px;overflow:auto; padding:20px">
             <div id="text" style="opacity:1; width: 40%; float: left; padding-right:1px;"></div>
-            <div id="plot" style="width: 40%; float: left;  padding-left:100px;min-height: inherit;"></div>
+            <div id="plot" style="width: 50%; float: left;  padding-left:30px;min-height: inherit;"></div>
         </div>
     </body>
     <div class="row" id="start-button-div" style="opacity: 0;margin-left: 25px;">
@@ -60,18 +60,23 @@
         }
 
         var layout = curr_stage['plot']['layout'] ?? {};
-        
-        var data = curr_stage['plot']['traces'];
+        var t = curr_stage['plot']['traces'] ?? [];
+        var args = curr_stage['plot']['args'] ?? {}
 
-        console.log("Data: " + data);
+        var plot_function = curr_stage['plot']['function'] ?? false;
+        var traces = (plot_function) ? window[plot_function](t, args) : t;
+    
+        
+
+        console.log("Data: " + JSON.stringify(traces));
 
         if (create) {
             console.log("in create")
             
-            Plotly.react(document.getElementById('plot'), data, layout);
+            Plotly.react(document.getElementById('plot'), traces, layout);
         } else {
             console.log('animating the plot?')
-            Plotly.animate('plot', {data:data, traces:[0], layout:layout},
+            Plotly.animate('plot', {data:traces, traces:Array.from(Array(traces.length).keys()), layout:layout},
             {
                 transition: {
                     duration: 500,
