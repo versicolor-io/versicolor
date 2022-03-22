@@ -7,9 +7,6 @@
     <div id="stage" style="display: none;">0</div>
     <body>
         <br><br>
-        <div id="section-title">
-            <h2></h2>
-        </div>
         <div id="content" style="display:block;min-height: 350px;max-height:350px;overflow:auto; padding:20px">
             <div id="text" style="opacity:1; width: 40%; float: left; padding-right:1px;"></div>
             <div id="plot" style="width: 40%; float: left;  padding-left:100px;min-height: inherit;"></div>
@@ -57,26 +54,20 @@
         // only use Plotly.animate if the plot already exists and is same type as prev
         var create = ((prev_stage['format'] != "plot") || 
                       (prev_stage['plot']['type'] != curr_stage['plot']['type']));
-        console.log(create);
+        console.log("Create: " + create);
         if (create) {
             document.getElementById('plot').innerHTML='';
         }
 
-        try {
-            var layout = curr_stage['plot']['layout'];
-        } catch {
-            var layout = {};
-        }
+        var layout = curr_stage['plot']['layout'] ?? {};
         
         var data = curr_stage['plot']['traces'];
-        console.log(data);
-        console.log(layout)
 
-        if (curr_stage['plot']['type'] == 'scatter') {
-            document.getElementById('plot').style.width = "60%";
-        }
+        console.log("Data: " + data);
+
         if (create) {
             console.log("in create")
+            
             Plotly.react(document.getElementById('plot'), data, layout);
         } else {
             console.log('animating the plot?')
@@ -121,11 +112,9 @@
 
     function transition(prev_stage, curr_stage) {
         var animate_text = curr_stage.animate_text ?? true;
-        console.log("animate_text" + animate_text);
 
         // fade out existing title and text
         if (animate_text) {
-            $("#section-title").delay(500).animate({"opacity": "0"}, 100);
             $("#text").delay(500).animate({"opacity": "0"}, 100);
         }
         // do not fade plot div if same img path or if plot for both
@@ -148,18 +137,16 @@
         
         setTimeout(() => {
             if (animate_text) {
-                document.getElementById('section-title').style['opacity'] =0;
                 document.getElementById('text').style['opacity'] = 0;
             }
             
-            document.getElementById('section-title').innerHTML = "<h2>" + curr_stage.title + "</h2>";
             document.getElementById('text').innerHTML = curr_stage.text.join('<br><br>');
 
             if (animate_plot) { document.getElementById('plot').style['opacity'] = 0;}
             fillPlotDiv(prev_stage, curr_stage);
             
             if (animate_text) {
-                $("#section-title").delay(500).animate({"opacity": "1"}, 700);
+                //$("#section-title").delay(500).animate({"opacity": "1"}, 700);
                 $("#text").delay(500).animate({"opacity": "1"}, 700);
             }
             
@@ -168,9 +155,8 @@
     }
 
     function update(stage) {
-        var prev_stage = curr_stage;
-        curr_stage = stages[stage];
-        console.log(stages);
+        var prev_stage = $.extend( true, {}, curr_stage );
+        curr_stage = $.extend(true, {}, stages[stage]);
 
         transition(prev_stage, curr_stage);
     }

@@ -103,8 +103,8 @@
                         },
                         "columnwidth": [0.1,0.1,0.1,0.1,0.1],
                         "cells": {
-                            "values":[[0,   4,   2, 1,   6, 8, 3],
-                            [10, 6, 7.5, 9, 3.5, 3, 5]
+                            "values":[[0,   1, 2, 3, 4, 5, 6, 7],
+                            [10, 9, 7.5, 5, 6, 3.5, 3]
                             ],
                             "align": "center",
                             "height": 25,
@@ -182,6 +182,53 @@
             "format": "plot",
             "plot": {
                 "type": "scatter",
+                "traces": [
+                    {
+                        "type": "scatter",
+                        "x": [0, 4, 2, 1, 6, 8, 3],
+                        "y": [10, 9, 7.5, 5, 6, 3.5, 3],
+                        "mode": "markers",
+                        "name": "Coffee and Sleep",
+                        "marker": {
+                            "color": "#87cefa",
+                            "size": 12
+                        }
+                    }
+                ],
+                "layout": {
+                    "xaxis": {
+                        "autorange": true,
+                        "showgrid": false,
+                        "range":[-0.5, 9],
+                        "color": "white",
+                        "tickmode": "linear",  
+                        "tick0": 1,
+                        "dtick": 1,
+                        "tickangle": 0
+                    },
+                    "yaxis": {
+                        "autorange": false,
+                        "showgrid": false,
+                        "range":[-0.5, 10.5],
+                        "color": "white",
+                        "tickmode": "linear",  
+                        "tick0": 1,
+                        "dtick": 1
+                    },
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor":"rgba(0,0,0,0)"
+                }
+            }
+        },
+        {
+            "title": "Fitting the Data",
+            "text": [
+                "We can see that it appears to follow a pattern."
+            ],
+            "format": "plot",
+            "plot": {
+                "type": "scatter",
+                "function": "lin_reg",
                 "traces": [
                     {
                         "type": "scatter",
