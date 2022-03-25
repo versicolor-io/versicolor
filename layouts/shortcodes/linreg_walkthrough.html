@@ -52,25 +52,28 @@
         var add_err_lines = args['add_err_lines'] ?? false;
         
         // if specified, add the LSS error lines
-        if (add_err_lines) {
-            for (const idx of x.keys()) {
-                x_val = x[idx];
-                y_val = y[idx];
-                y_fit = get_fit_y(x_val, lr);
-                traces.push({
-                    type: 'scatter',
-                    x: [x_val, x_val],
-                    y: [y_val, y_fit],
-                    mode: 'lines',
-                    name: 'dashdot',
-                    line: {
-                        color: 'rgb(255, 217, 102)',
-                        dash:'dashdot',
-                        width:1
-                    }
-                });
+        for (const idx of x.keys()) {
+            x_val = x[idx];
+            y_val = y[idx];
+            y_fit = get_fit_y(x_val, lr);
+            t = {
+                type: 'scatter',
+                mode: 'lines',
+                x: [x_val, x_val],
+                y: [y_val, y_fit],
+                line: {
+                    color: 'rgb(255, 217, 102)',
+                    width:1
+                }
             }
+            if (!args['show_err_lines']) {
+                t['opacity'] = 0
+            } else {
+                t['opacity'] = 1
+            }
+            traces.push(t);
         }
+        
 
         // Now add the fit line
         console.log("adding lss line of best fit");
@@ -78,14 +81,17 @@
         var x1 = x[x.length - 1];
         var y0 = get_fit_y(x0, lr);
         var y1 = get_fit_y(x1, lr);
-
-        traces.push( {
-            type: 'scatter',
-            name: "fit",
-            x: [x0,x1],
-            y: [y0,y1],
-            
-        });
+        t = {
+                type: 'scatter',
+                mode: 'lines',
+                x: [x0,x1],
+                y: [y0,y1],
+                line: {
+                    color: 'rbg(204,135,197)'
+                }
+            }
+        if (!args['show_fit']) {t['opacity'] = 0} else {t['opacity'] = 1}
+        traces.push(t);
         console.log("Traces");
         console.log(traces);
         return traces;
