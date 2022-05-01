@@ -3,26 +3,41 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
+<style>
+    #stage {
+        display: none;
+    }
+
+    #stage-buttons-div {
+        display:block;
+        overflow:auto;
+    }
+
+    #stage-button {
+        float:left;
+        padding:10px;
+    }
+    </style>
+
     
-    <div id="stage" style="display: none;">0</div>
+    <div id="stage">0</div>
     <body>
         <br><br>
-        <div id="content" style="display:block;min-height: 350px;max-height:350px;overflow:auto; padding:20px">
+        <div id="stage-buttons-div">
+            <div class="column" id="stage-button">
+                <input id="backbtn" type="button" value="BACK">
+            </div>
+            <div class="column" id="stage-button" style=>
+                <input id="nextbtn" type="button" value="NEXT">
+            </div>
+        </div>
+        <div id="content" style="display:block;min-height: 350px;max-height:350px;overflow:auto; padding-top:50px">
             <div id="text" style="opacity:1; width: 40%; float: left; padding-right:1px;"></div>
             <div id="plot" style="width: 50%; float: left;  padding-left:30px;min-height: inherit;"></div>
         </div>
     </body>
-    <div class="row" id="start-button-div" style="opacity: 0;margin-left: 25px;">
-        <input id="startbtn" type="button" value="START" style="margin-left: 25px;">
-    </div>
-    <div class="row" style="visibility: hidden;margin-left: 25px;" id="stage-buttons-div">
-        <div class="column" id="stage-buttons-div" style="align:left">
-            <input id="backbtn" type="button" value="<">
-        </div>
-        <div class="column" id="next" style="align:right">
-            <input id="nextbtn" type="button" value=">">
-        </div>
-    </div>
+    
+    
 
 <script>
     var curr_stage = {};
@@ -71,11 +86,8 @@
         console.log("Data: " + JSON.stringify(traces));
 
         if (create) {
-            console.log("in create")
-            
             Plotly.react(document.getElementById('plot'), traces, layout);
         } else {
-            console.log('animating the plot?')
             Plotly.animate('plot', {data:traces, traces:Array.from(Array(traces.length).keys()), layout:layout},
             {
                 transition: {
@@ -167,22 +179,11 @@
     }
     
     
-    $("#start-button-div").delay(500).animate({"opacity": "1"}, 500);
+    $("#stage-buttons-div").delay(500).animate({"opacity": "1"}, 500);
     setTimeout(() => {
         update(0);
     }, 500);
 
-    document.getElementById('startbtn').addEventListener("click", () => {
-        document.getElementById('stage').innerHTML = 1;
-        update(stage=1);
-        $("#start-button-div").delay(500).animate({"opacity": "0"}, 500);
-        setTimeout(() => {
-            document.getElementById('startbtn').style.display = "none";
-            document.getElementById('stage-buttons-div').style.opacity = 0;
-            document.getElementById('stage-buttons-div').style.visibility = 'visible';
-            $("#stage-buttons-div").delay(500).animate({"opacity": "1"}, 500);
-        }, 5);
-    });
 
     function next_stage() {
         var curr_stage = parseInt(document.getElementById('stage').innerHTML);
