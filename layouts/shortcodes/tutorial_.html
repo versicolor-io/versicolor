@@ -1,0 +1,256 @@
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<style>
+    #stage {
+        display: none;
+    }
+
+    #stage-buttons-div {
+        display:block;
+        overflow:auto;
+    }
+
+    #stage-button {
+        float:left;
+        padding:10px;
+    }
+
+    #content {
+        display:block;
+        min-height: 500px;
+        max-height:500px;
+        overflow:auto;
+        padding-top:50px
+    }
+
+    #d1 {
+        width: 40%;
+        float: left;
+    }
+
+    #d2 {
+        width: 50%;
+        float: left;
+        padding-left:30px;
+        min-height: inherit;
+    }
+
+    #d3 {
+        clear: both;
+        width: inherit;
+        height: auto;
+        position: static;
+        padding-top: 10px;
+    }
+</style>
+
+    
+    <div id="stage">0</div>
+    <body>
+        <br><br>
+        <div id="stage-buttons-div">
+            <div class="column" id="stage-button">
+                <input id="backbtn" type="button" value="BACK">
+            </div>
+            <div class="column" id="stage-button" style=>
+                <input id="nextbtn" type="button" value="NEXT">
+            </div>
+        </div>
+        <div id="content">
+            <div id="d1"></div>
+            <div id="d2"></div>
+        </div>
+    </body>
+    
+    
+
+<script>
+    var curr_stage = {};
+    var metadata = {};
+    var stages = [];
+
+    function readTextFile(file, callback) {
+        var rawFile = new XMLHttpRequest();
+        rawFile.overrideMimeType("application/json");
+        rawFile.open("GET", file, true);
+        rawFile.onreadystatechange = function () {
+            if (rawFile.readyState === 4 && rawFile.status == "200") {
+                callback(rawFile.responseText);
+            }
+        }
+        rawFile.send(null);
+    }
+
+    function updateStageWithDefaults(curr_stage) {
+        // look at defaults in JSON and fills curr_stage with keys
+        // that are in default. Anything in default that is already in
+        // the stage will not be overwritten with default.
+
+        
+        
+    }
+
+    function makePlot(prev_stage, curr_stage) {
+        // only use Plotly.animate if the plot already exists and is same type as prev
+        var create = ((prev_stage['format'] != "plot") || 
+                      (prev_stage['plot']['type'] != curr_stage['plot']['type']));
+        console.log("Create: " + create);
+        if (create) {
+            document.getElementById('d2').innerHTML='';
+        }
+
+        var layout = curr_stage['plot']['layout'] ?? {};
+        var t = curr_stage['plot']['traces'] ?? [];
+        var args = curr_stage['plot']['args'] ?? {}
+
+        var plot_function = curr_stage['plot']['function'] ?? false;
+        var traces = (plot_function) ? window[plot_function](t, args) : t;
+    
+        
+
+        console.log("Data: " + JSON.stringify(traces));
+
+        if (create) {
+            Plotly.react(document.getElementById('d2'), traces, layout);
+        } else {
+            Plotly.animate('d2', {data:traces, traces:Array.from(Array(traces.length).keys()), layout:layout},
+            {
+                transition: {
+                    duration: 500,
+                    easing: 'cubic-in-out'
+                },
+                frame: {
+                    duration: 500
+                }
+            });
+        }
+    }
+
+    function makeImg(prev_stage, curr_stage) {
+        var fade = true;
+        if (prev_stage['format'] == 'img' && prev_stage['img']['path'] == curr_stage['img']['path']) {
+            fade = false;
+        }
+        document.getElementById('d2').innerHTML = "<img src=" + 
+                        curr_stage['img']['path'] +
+                        " />"
+    }
+
+    function fillPlotDiv(prev_stage, curr_stage) {
+        // Check for stage type
+        try {
+            var format = curr_stage['format'];
+        } catch(error) {
+            console.log('No format specified, displaying text only');
+        }
+
+        if (format == "plot") {
+            makePlot(prev_stage, curr_stage);
+        }
+        if (format == "img") {
+            makeImg(prev_stage, curr_stage);
+        }
+    }
+
+    function transition(prev_stage, curr_stage) {
+        var animate_text = curr_stage.animate_text ?? true;
+
+        // fade out existing title and text
+        if (animate_text) {
+            $("#d1").delay(500).animate({"opacity": "0"}, 100);
+        }
+        // do not fade plot div if same img path or if plot for both
+        // plotly should animate the transition
+        var animate_plot = true;
+
+        var has_prev = Object.keys(prev_stage).length > 0;
+
+        console.log(curr_stage);
+        if (has_prev && (prev_stage['format'] == 'img' & curr_stage['format'] == 'img' &&
+            prev_stage['img']['path'] == curr_stage['img']['path']) ||
+            (prev_stage['format'] == 'plot' && curr_stage['format'] == 'plot') &&
+             prev_stage['plot']['type'] == curr_stage['plot']['type']) {
+                animate_plot = false;
+            } 
+
+        if (animate_plot) {
+            $("#plot").delay(500).animate({"opacity": "0"}, 100);
+        }
+        
+        setTimeout(() => {
+            if (animate_text) {
+                document.getElementById('d1').style['opacity'] = 0;
+            }
+            
+            document.getElementById('d1').innerHTML = curr_stage.text.join('<br><br>');
+
+            if (animate_plot) { document.getElementById('d2').style['opacity'] = 0;}
+            fillPlotDiv(prev_stage, curr_stage);
+            
+            if (animate_text) {
+                //$("#section-title").delay(500).animate({"opacity": "1"}, 700);
+                $("#d1").delay(500).animate({"opacity": "1"}, 700);
+            }
+            
+            if (animate_plot) { $("#d2").delay(500).animate({"opacity": "1"}, 700); }
+        }, 650);
+    }
+
+    function update(stage) {
+        var prev_stage = $.extend( true, {}, curr_stage );
+        curr_stage = $.extend(true, {}, stages[stage]);
+
+        transition(prev_stage, curr_stage);
+    }
+    
+    
+    $("#stage-buttons-div").delay(500).animate({"opacity": "1"}, 500);
+    setTimeout(() => {
+        update(0);
+    }, 500);
+
+
+    function next_stage() {
+        var curr_stage = parseInt(document.getElementById('stage').innerHTML);
+        document.getElementById('stage').innerHTML = curr_stage + 1;
+        update(stage = curr_stage + 1);
+    }
+
+    function prev_stage() {
+        var curr_stage = parseInt(document.getElementById('stage').innerHTML);
+        document.getElementById('stage').innerHTML = curr_stage - 1;
+        update(stage = curr_stage - 1);
+    }
+
+    function checkKey(e) {
+        e = e || window.event;
+
+        if (e.keyCode == '38') {
+            // up arrow, back
+            prev_stage();
+        }
+        else if (e.keyCode == '40') {
+            // down arrow, next
+            next_stage();
+        }
+        else if (e.keyCode == '37') {
+            // left arrow
+            prev_stage();
+        }
+        else if (e.keyCode == '39') {
+            // right arrow
+            next_stage();
+        }
+    }
+
+    document.getElementById('nextbtn').addEventListener("click", next_stage);
+
+    document.getElementById('backbtn').addEventListener("click", prev_stage);
+
+    document.onkeydown = checkKey;
+
+
+</script>
