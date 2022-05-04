@@ -1,0 +1,99 @@
+<script>
+    readTextFile("/json/linreg.json", function (text) {
+        metadata = JSON.parse(text);
+        stages = metadata['stages'];
+    });
+
+    function linearRegression(y,x){
+        // from https://stackoverflow.com/questions/6195335/linear-regression-in-javascript
+        var lr = {};
+        var n = y.length;
+        var sum_x = 0;
+        var sum_y = 0;
+        var sum_xy = 0;
+        var sum_xx = 0;
+        var sum_yy = 0;
+
+        for (var i = 0; i < y.length; i++) {
+
+            sum_x += x[i];
+            sum_y += y[i];
+            sum_xy += (x[i]*y[i]);
+            sum_xx += (x[i]*x[i]);
+            sum_yy += (y[i]*y[i]);
+        } 
+
+        lr['slope'] = (n * sum_xy - sum_x * sum_y) / (n*sum_xx - sum_x * sum_x);
+        lr['intercept'] = (sum_y - lr.slope * sum_x)/n;
+        lr['r2'] = Math.pow((n*sum_xy - sum_x*sum_y)/Math.sqrt((n*sum_xx-sum_x*sum_x)*(n*sum_yy-sum_y*sum_y)),2);
+
+        return lr;
+    }
+
+    function get_fit_y(x_val, lr) {
+        // given a regression and an x, give the fit y val
+        return lr['slope'] * x_val + lr['intercept']
+    }
+
+    function lin_reg(traces, args) {
+        // Params: 
+        //      - traces containing plotly data
+        //      - (opt) args dict detailing more options
+        // Returns: 
+        //      - New modified traces data with fit line 
+        //        and other info depending on args
+
+        console.log("assuming that the x, y data live in first trace");
+        var x = traces[0]['x'] ?? [];
+        var y = traces[0]['y'] ?? [];
+        console.log("x: " + x + "\ny: " + y);
+        lr = linearRegression(y, x);
+
+        var add_err_lines = args['add_err_lines'] ?? false;
+        
+        // if specified, add the LSS error lines
+        for (const idx of x.keys()) {
+            x_val = x[idx];
+            y_val = y[idx];
+            y_fit = get_fit_y(x_val, lr);
+            t = {
+                type: 'scatter',
+                mode: 'lines',
+                x: [x_val, x_val],
+                y: [y_val, y_fit],
+                line: {
+                    color: 'rgb(255, 217, 102)',
+                    width:1
+                }
+            }
+            if (!args['show_err_lines']) {
+                t['opacity'] = 0
+            } else {
+                t['opacity'] = 1
+            }
+            traces.push(t);
+        }
+        
+
+        // Now add the fit line
+        console.log("adding lss line of best fit");
+        var x0 = x[0];
+        var x1 = x[x.length - 1];
+        var y0 = get_fit_y(x0, lr);
+        var y1 = get_fit_y(x1, lr);
+        t = {
+                type: 'scatter',
+                mode: 'lines',
+                x: [x0,x1],
+                y: [y0,y1],
+                line: {
+                    color: 'rbg(204,135,197)'
+                }
+            }
+        if (!args['show_fit']) {t['opacity'] = 0} else {t['opacity'] = 1}
+        traces.push(t);
+        console.log("Traces");
+        console.log(traces);
+        return traces;
+    }
+</script>

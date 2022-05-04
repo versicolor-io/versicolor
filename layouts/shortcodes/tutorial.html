@@ -35,8 +35,9 @@
     #d1 {
         width:45%;
         min-height:70%;
-        padding: 5px 0px 5px 10px;
+        padding: 5px 10px 5px 10px;
         float:left;
+        opacity: inherit;
 
         border-radius:25px;
         border:2px solid;
@@ -45,8 +46,9 @@
     #d2 {
         width:45%;
         height:70%;
-        padding: 5px 10px 5px 0px;
+        padding: 5px 10px 5px 10px;
         float:right;
+        opacity: inherit;
 
         border-radius:25px;
         border:2px solid;
@@ -58,7 +60,8 @@
         height:30%;
         position:absolute;
         bottom:0;
-        padding: 0px 10px 5px 10px;
+        padding: 5px 10px 5px 10px;
+        opacity: inherit;
 
         border-radius:25px;
         border:2px solid;
@@ -79,13 +82,17 @@
     </div>
 
     <div id="content">
-        <div id="d1">Hello</div>
-        <div id="d2">there</div>
-        <div id="d3">Test test test!</div>
+        <div id="d1"></div>
+        <div id="d2"></div>
+        <div id="d3"></div>
     </div>
 </body>
 
 <script>
+    var prev_stage = {};
+    var curr_stage = {};
+    var metadata = {};
+    var stages = [];
 
     function readTextFile(file, callback) {
         var rawFile = new XMLHttpRequest();
@@ -114,7 +121,15 @@
     }
 
     function fillContentDiv(div, prev, curr) {
-
+        var type = curr['type'];
+        switch(type) {
+            case 'text':
+                div.innerHTML = curr['content'].join('<br><br>');
+                break;
+            case 'plot':
+            case 'image':
+                div.innerHTML = "<img src=" + curr['img']['path'] + " />"
+        }
     }
 
     function fillContentAll(prev_stage, curr_stage) {
@@ -131,6 +146,57 @@
 
             fillContentDiv(div, prev, curr);
         }
+    }
+
+    function transitionStage(in_or_out, stage) {
+        /*
+        Takes in stage and an enum saying whether content
+        is faded in or out.
+        Specific divs can have a "fade" property (default to true)
+        which can be set if the div should remain static.
+        */
+        for (const x of Array(3).keys()) {
+            d = stage[x];
+            if (('fade' in d['formath']) && d['format']['fade'] == false) {
+                continue;
+            }
+            var id = concat("#d", toString(x));
+            fadeDiv(id, in_or_out);
+        }
+    }
+
+    function onUpdate(status) {
+        /*
+        Called on next or prev press. Updates the stage value, then calls cascading
+        functions to update the page content.
+        */
+
+        // Update the stage value
+        var prev_stage_idx = parseInt(document.getElementById('stage').innerHTML);
+        switch(status) {
+            case 'next':
+                var curr_stage_idx = prev_stage_idx + 1
+                break;
+            case 'prev':
+                var curr_stage_idx = prev_stage_idx - 1;
+                break;
+        }
+        document.getElementById('stage').innerHTML = curr_stage_idx;
+        curr_stage = stages[curr_stage_idx];
+        prev_stage = stages[prev_stage_idx];
+
+        // fade content
+        transitionStage("in", curr_stage);
+
+
+    }
+
+    function onNext() {
+        onUpdate("next");
+    }
+
+    function onPrev() {
+        onUpdate("prev");
     }
 
     function main() {
