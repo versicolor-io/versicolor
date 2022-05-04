@@ -11,11 +11,13 @@
     #stage-buttons-div {
         display:block;
         overflow:auto;
+        padding-bottom: 30px;
+        opacity:0;
     }
 
     #stage-button {
         float:left;
-        padding:10px;
+        padding-right:30px;
     }
 
     #content {
@@ -24,13 +26,14 @@
         overflow:auto;
         min-height: 500px;
         max-height:500px;
+        opacity:0;
         
         border-radius:25px;
         border:2px solid;
     }
 
     #d1 {
-        width:50%;
+        width:45%;
         min-height:70%;
         padding: 5px 0px 5px 10px;
         float:left;
@@ -40,7 +43,7 @@
     }
 
     #d2 {
-        width:50%;
+        width:45%;
         height:70%;
         padding: 5px 10px 5px 0px;
         float:right;
@@ -65,9 +68,75 @@
 
 <body>
     <div id="stage">0</div>
+
+    <div id="stage-buttons-div">
+        <div class="column" id="stage-button">
+            <input id="backbtn" type="button" value="BACK">
+        </div>
+        <div class="column" id="stage-button" style=>
+            <input id="nextbtn" type="button" value="NEXT">
+        </div>
+    </div>
+
     <div id="content">
         <div id="d1">Hello</div>
         <div id="d2">there</div>
         <div id="d3">Test test test!</div>
     </div>
 </body>
+
+<script>
+
+    function readTextFile(file, callback) {
+        var rawFile = new XMLHttpRequest();
+        rawFile.overrideMimeType("application/json");
+        rawFile.open("GET", file, true);
+        rawFile.onreadystatechange = function () {
+            if (rawFile.readyState === 4 && rawFile.status == "200") {
+                callback(rawFile.responseText);
+            }
+        }
+        rawFile.send(null);
+    }
+
+    function fadeDiv(id, in_or_out="in") {
+        /*
+        Call at the beginning of the transition.
+        Fades out all content divs so they can later be
+        populated with new content and then faded back in.
+        */
+        if (in_or_out == "in") {
+            $(id).delay(500).animate({"opacity": "1"}, 1000);
+        } else {
+            $(id).delay(500).animate({"opacity": "0"}, 1000);
+        }
+        
+    }
+
+    function fillContentDiv(div, prev, curr) {
+
+    }
+
+    function fillContentAll(prev_stage, curr_stage) {
+        // fill each of the three divs
+        for (const x of Array(3).keys()) {
+            // TODO add transitions
+            
+            // into to string to join with div
+            var s = concat("d", toString(x));
+            var div = document.getElementById(s);
+
+            var prev = prev_stage[x];
+            var curr = curr_stage[x];
+
+            fillContentDiv(div, prev, curr);
+        }
+    }
+
+    function main() {
+        fadeDiv("#stage-buttons-div");
+        fadeDiv("#content");
+    }
+
+    main();
+</script>
