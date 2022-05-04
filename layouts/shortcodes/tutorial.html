@@ -132,7 +132,7 @@
         }
     }
 
-    function fillContentAll(prev_stage, curr_stage) {
+    function fillContentAll() {
         // fill each of the three divs
         for (const x of Array(3).keys()) {
             // TODO add transitions
@@ -148,7 +148,7 @@
         }
     }
 
-    function transitionStage(in_or_out, stage) {
+    function transitionStage(in_or_out) {
         /*
         Takes in stage and an enum saying whether content
         is faded in or out.
@@ -156,7 +156,7 @@
         which can be set if the div should remain static.
         */
         for (const x of Array(3).keys()) {
-            d = stage[x];
+            d = curr_stage[x];
             if (('fade' in d['formath']) && d['format']['fade'] == false) {
                 continue;
             }
@@ -165,41 +165,68 @@
         }
     }
 
-    function onUpdate(status) {
+    function updateStages(status) {
         /*
-        Called on next or prev press. Updates the stage value, then calls cascading
-        functions to update the page content.
+        Args: 
+            status:      enum, [next / prev]
+
+        Returns:
+            nil, updates globals
         */
 
-        // Update the stage value
         var prev_stage_idx = parseInt(document.getElementById('stage').innerHTML);
         switch(status) {
             case 'next':
                 var curr_stage_idx = prev_stage_idx + 1
                 break;
             case 'prev':
+                if (prev_stage_idx == 0) {
+                    break;
+                }
                 var curr_stage_idx = prev_stage_idx - 1;
                 break;
         }
         document.getElementById('stage').innerHTML = curr_stage_idx;
         curr_stage = stages[curr_stage_idx];
-        prev_stage = stages[prev_stage_idx];
+        prev_stage = stages[prev_stage_idx];   
+    }
 
-        // fade content
-        transitionStage("in", curr_stage);
+    function onUpdate(status) {
+        /*
+        Called on next or prev press. Updates the stage value, then calls cascading
+        functions to update the page content.
+        */
 
+        updateStages(status);
+        console.log(curr_stage)
+        
+        // fade out content
+        transitionStage("out");
 
+        // update content
+        fillContentAll();
+
+        // fade in content
+        transitionStage("in");
     }
 
     function onNext() {
+        console.log("next");
         onUpdate("next");
     }
 
     function onPrev() {
+        console.log("prev");
         onUpdate("prev");
     }
 
+    document.getElementById('nextbtn').addEventListener("click", onNext);
+
+    document.getElementById('backbtn').addEventListener("click", onPrev);
+
+
     function main() {
+        console.log("main");
         fadeDiv("#stage-buttons-div");
         fadeDiv("#content");
     }
