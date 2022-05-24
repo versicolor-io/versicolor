@@ -5,5 +5,3 @@ draft: false
 ---
 
 {{<tutorial>}}
-
-{{<template_walkthrough>}}
