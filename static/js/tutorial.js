@@ -58,13 +58,12 @@ function fadeDiv(id, in_or_out="in") {
 }
 
 function renderPlot(div, prev, curr) {
-    console.log("In render plot");
-    var myChart = echarts.init(div);
-    console.log("mychart: ")
-    console.log(myChart)
+    // if previous was not a plot, we need to zero out the innerHTML
+    div.innerHTML = '<div id="plt_div"></div>';
+    let plt_div = document.getElementById('plt_div');
+    console.log(div.innerHTML);
     var option = curr['option'];
-    console.log("Option retrieved: ")
-    console.log(option)
+    let myChart = echarts.init(plt_div);
     myChart.setOption(option);
 }
 
@@ -72,12 +71,15 @@ function fillContentDiv(div, prev, curr) {
     var type = curr['type'];
     switch(type) {
         case 'text':
+            console.log('in text')
             div.innerHTML = curr.content.join('<br><br>');
             break;
         case 'plot':
-            renderPlot(div, prev, curr)
+            console.log('in plot');
+            renderPlot(div, prev, curr);
             break;
         case 'image':
+            console.log('in image');
             div.innerHTML = "<img src=" + curr['path'] + " />"
     }
 }
@@ -91,7 +93,7 @@ function fillContentAll() {
         var s = "d".concat((x + 1).toString());
         var div = document.getElementById(s);
 
-        var prev = prev_stage[x];
+        var prev = prev_stage[x] || {};
         var curr = curr_stage[x];
 
         setTimeout(fillContentDiv, 500, div, prev, curr);
@@ -191,6 +193,7 @@ function main() {
     fadeDiv("#content");
 
     var stage_idx = urlParams.get('stage') || 0;
+    document.getElementById('stage').innerHTML = stage_idx;
 
     curr_stage = stages[stage_idx];
     console.log(curr_stage);
