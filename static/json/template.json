@@ -66,13 +66,19 @@
                         "min": -100,
                         "max": 80,
                         "type": "value",
-                        "axisLine": { "onZero": false }
+                        "axisLine": { "onZero": false },
+                        "name": "X Axis Title",
+                        "nameLocation": "middle",
+                        "nameGap": 30
                       },
                       "yAxis": {
                         "min": -30,
                         "max": 60,
                         "type": "value",
-                        "axisLine": { "onZero": false }
+                        "axisLine": { "onZero": false },
+                        "name": "Y Axis Title",
+                        "nameLocation": "middle",
+                        "nameGap": 30
                       },
                       "series": [
                         {
@@ -88,7 +94,10 @@
                             [-22.1, 40]
                           ]
                         }
-                      ]
+                      ],
+                      "grid": {
+                          "containLabel": true
+                      }
                 }
             },
             {

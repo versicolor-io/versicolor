@@ -65,6 +65,9 @@ function renderPlot(div, prev, curr) {
     var option = curr['option'];
     let myChart = echarts.init(plt_div);
     myChart.setOption(option);
+    window.onresize = function() {
+        myChart.resize();
+      };
 }
 
 function fillContentDiv(div, prev, curr) {
