@@ -2,6 +2,29 @@ var prev_stage = {};
 var curr_stage = {};
 var metadata = {};
 var stages = [];
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+
+// This function will be called repeatly while dragging.
+// The mission of this function is to update `series.data` based on
+// the new points updated by dragging, and to re-render the line
+// series based on the new data, by which the graphic elements of the
+// line series can be synchronized with dragging.
+function onPointDragging(dataIndex) {
+    // Here the `data` is declared in the code block in the beginning
+    // of this article. The `this` refers to the dragged circle.
+    // `this.position` is the current position of the circle.
+    data[dataIndex] = myChart.convertFromPixel('grid', this.position);
+    // Re-render the chart based on the updated `data`.
+    myChart.setOption({
+      series: [
+        {
+          id: 'a',
+          data: data
+        }
+      ]
+    });
+  }
 
 function readTextFile(file, callback) {
     var rawFile = new XMLHttpRequest();
@@ -34,14 +57,26 @@ function fadeDiv(id, in_or_out="in") {
     
 }
 
+function renderPlot(div, prev, curr) {
+    console.log("In render plot");
+    var myChart = echarts.init(div);
+    console.log("mychart: ")
+    console.log(myChart)
+    var option = curr['option'];
+    console.log("Option retrieved: ")
+    console.log(option)
+    myChart.setOption(option);
+}
+
 function fillContentDiv(div, prev, curr) {
     var type = curr['type'];
-    console.log(div);
     switch(type) {
         case 'text':
             div.innerHTML = curr.content.join('<br><br>');
             break;
         case 'plot':
+            renderPlot(div, prev, curr)
+            break;
         case 'image':
             div.innerHTML = "<img src=" + curr['path'] + " />"
     }
@@ -54,7 +89,6 @@ function fillContentAll() {
         
         // into to string to join with div
         var s = "d".concat((x + 1).toString());
-        console.log(s);
         var div = document.getElementById(s);
 
         var prev = prev_stage[x];
@@ -115,8 +149,15 @@ function onUpdate(status) {
     functions to update the page content.
     */
 
+    // Handle edge cases
+    var stage_idx = document.getElementById('stage').innerHTML;
+    if ((stage_idx == 0 && status == "prev") ||
+        (stage_idx == (stages.length - 1) && status == "next")) {
+            console.log("cannot do")
+            return
+        }
+
     
-    console.log(curr_stage)
     updateStages(status);
     
     // fade out content
@@ -149,7 +190,9 @@ function main() {
     fadeDiv("#stage-buttons-div");
     fadeDiv("#content");
 
-    curr_stage = stages[0];
+    var stage_idx = urlParams.get('stage') || 0;
+
+    curr_stage = stages[stage_idx];
     console.log(curr_stage);
     // update content
     fillContentAll();
