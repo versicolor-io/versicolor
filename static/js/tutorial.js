@@ -57,14 +57,95 @@ function fadeDiv(id, in_or_out="in") {
     
 }
 
+function onPointDragging(dataIndex, myChart, pos) {
+    console.log("IN DRAG FUNC")
+    // Here the `data` is declared in the code block in the beginning
+    // of this article. The `this` refers to the dragged circle.
+    // `this.position` is the current position of the circle.
+    data[dataIndex] = myChart.convertFromPixel('grid', pos);
+    // Re-render the chart based on the updated `data`.
+    myChart.setOption({
+      series: [
+        {
+          id: 'a',
+          data: data
+        }
+      ]
+    });
+}
+
+function showTooltip(dataIndex) {
+    console.log("OVER")
+    myChart.dispatchAction({
+        type: 'showTip',
+        seriesIndex: 0,
+        dataIndex: dataIndex
+    });
+}
+function hideTooltip(dataIndex) {
+    myChart.dispatchAction({ type: 'hideTip' });
+}
+
 function renderPlot(div, prev, curr) {
     // if previous was not a plot, we need to zero out the innerHTML
     div.innerHTML = '<div id="plt_div"></div>';
     let plt_div = document.getElementById('plt_div');
-    console.log(div.innerHTML);
     var option = curr['option'];
     let myChart = echarts.init(plt_div);
-    myChart.setOption(option);
+    
+    // check if we are doing interactions
+    var drag = curr['format']['drag'] || false;
+    
+    //console.log(JSON.stringify(curr['option']));
+    console.log("OPTION");
+    console.log(typeof(option));
+    console.log(option);
+    if (drag) {
+        var data = curr['option']['series'][0]['data'];
+        var symbolSize = curr['option']['series'][0]['symbolSize'];
+
+        setTimeout(function() {
+            myChart.setOption(echarts.util.map(data, function(item, dataIndex) {
+                console.log("DATA");
+                console.log(item)
+                console.log("DATA INDEX")
+                console.log(dataIndex)
+                return {
+                  type: 'circle',
+                  position: myChart.convertToPixel('grid', item),
+                  shape: { cx: 0,
+                    cy: 0, r: symbolSize / 2 },
+                  invisible: true,
+                  draggable: true,
+                  ondrag: function (dx, dy) {
+                      console.log(dx, dy);
+                      onPointDragging(dataIndex, [dx, dy]);
+                  },
+                  onmousemove: echarts.util.curry(showTooltip, dataIndex),
+                  onmouseout: echarts.util.curry(hideTooltip, dataIndex),
+                  z: 100
+                };
+              }));
+        }, 0);
+
+        //console.log("Setting option");
+
+        //myChart.setOption(option);
+        
+            
+        
+        window.addEventListener('resize', function() {
+            myChart.setOption({
+                graphic: echarts.util.map(data, function(item, dataIndex) {
+                    return { position: myChart.convertToPixel('grid', item) };
+                })
+            });
+        });
+    }
+    console.log("option");
+    
+    
+    console.log(option);
     window.onresize = function() {
         myChart.resize();
       };

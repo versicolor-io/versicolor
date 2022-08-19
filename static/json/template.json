@@ -98,6 +98,9 @@
                       "grid": {
                           "containLabel": true
                       }
+                },
+                "format": {
+                    "drag": true
                 }
             },
             {
