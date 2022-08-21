@@ -1,0 +1,15 @@
+{
+    "defaults": [],
+    "stages": [
+        [
+            {
+                "type": "text",
+                "content": [
+                    "This is the start of a tutorial on simple linear regression.", 
+                    "It's not done yet!.",
+                    "Check back later."
+                ]
+            }
+        ]
+    ]
+}

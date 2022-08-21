@@ -23,6 +23,7 @@ function readTextFile(file, callback) {
 readTextFile(path, function (text) {
     metadata = JSON.parse(text);
     stages = metadata['stages'];
+    console.log(stages)
 });
 
 
