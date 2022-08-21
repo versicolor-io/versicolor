@@ -1,3 +1,4 @@
+
 var prev_stage = {};
 var curr_stage = {};
 var metadata = {};
@@ -5,26 +6,6 @@ var stages = [];
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 
-// This function will be called repeatly while dragging.
-// The mission of this function is to update `series.data` based on
-// the new points updated by dragging, and to re-render the line
-// series based on the new data, by which the graphic elements of the
-// line series can be synchronized with dragging.
-function onPointDragging(dataIndex) {
-    // Here the `data` is declared in the code block in the beginning
-    // of this article. The `this` refers to the dragged circle.
-    // `this.position` is the current position of the circle.
-    data[dataIndex] = myChart.convertFromPixel('grid', this.position);
-    // Re-render the chart based on the updated `data`.
-    myChart.setOption({
-      series: [
-        {
-          id: 'a',
-          data: data
-        }
-      ]
-    });
-  }
 
 function readTextFile(file, callback) {
     var rawFile = new XMLHttpRequest();
@@ -57,8 +38,75 @@ function fadeDiv(id, in_or_out="in") {
     
 }
 
-function onPointDragging(dataIndex, myChart, pos) {
-    console.log("IN DRAG FUNC")
+function showTooltip(myChart, dataIndex) {
+    myChart.dispatchAction({
+        type: 'showTip',
+        seriesIndex: 0,
+        dataIndex: dataIndex
+    });
+}
+function hideTooltip(myChart, dataIndex) {
+    myChart.dispatchAction({ type: 'hideTip' });
+}
+
+function renderPlot(div, prev, curr) {
+    // if previous was not a plot, we need to zero out the innerHTML
+    div.innerHTML = '<div id="plt_div"></div>';
+    let plt_div = document.getElementById('plt_div');
+    var option = curr['option'];
+    let myChart = echarts.init(plt_div);
+    
+    // check if we are doing interactions
+    const drag = curr['format']['drag'] || false;
+    
+    //console.log(JSON.stringify(curr['option']));
+    if (drag) {
+        const data = curr['option']['series'][0]['data'];
+        const symbolSize = curr['option']['series'][0]['symbolSize'];
+
+        myChart.setOption(option);
+
+        setTimeout(function() {
+            myChart.setOption(
+                { graphic: 
+                    echarts.util.map(data, function(item, dataIndex) {
+                        return {
+                            type: 'circle',
+                            position: myChart.convertToPixel('grid', item),
+                            shape: { 
+                                cx: 0,
+                                cy: 0,
+                                r: symbolSize / 2 },
+                            invisible: true,
+                            draggable: true,
+                            ondrag: function (dx, dy) {
+                                onPointDragging(data, dataIndex, myChart, [this.x, this.y]);
+                            },
+                            onmousemove: echarts.util.curry(showTooltip, myChart, dataIndex),
+                            onmouseout: echarts.util.curry(hideTooltip, myChart, dataIndex),
+                            z: 100
+                        }
+                    })
+                })});
+
+            myChart.setOption(option);
+        
+    }
+        
+    window.addEventListener('resize', function() {
+        myChart.setOption({
+            graphic: echarts.util.map(data, function(item, dataIndex) {
+                return { position: myChart.convertToPixel('grid', item) };
+            })
+        });
+    });
+    
+    window.onresize = function() {
+        myChart.resize();
+      };
+}
+
+function onPointDragging(data, dataIndex, myChart, pos) {
     // Here the `data` is declared in the code block in the beginning
     // of this article. The `this` refers to the dragged circle.
     // `this.position` is the current position of the circle.
@@ -72,83 +120,6 @@ function onPointDragging(dataIndex, myChart, pos) {
         }
       ]
     });
-}
-
-function showTooltip(dataIndex) {
-    console.log("OVER")
-    myChart.dispatchAction({
-        type: 'showTip',
-        seriesIndex: 0,
-        dataIndex: dataIndex
-    });
-}
-function hideTooltip(dataIndex) {
-    myChart.dispatchAction({ type: 'hideTip' });
-}
-
-function renderPlot(div, prev, curr) {
-    // if previous was not a plot, we need to zero out the innerHTML
-    div.innerHTML = '<div id="plt_div"></div>';
-    let plt_div = document.getElementById('plt_div');
-    var option = curr['option'];
-    let myChart = echarts.init(plt_div);
-    
-    // check if we are doing interactions
-    var drag = curr['format']['drag'] || false;
-    
-    //console.log(JSON.stringify(curr['option']));
-    console.log("OPTION");
-    console.log(typeof(option));
-    console.log(option);
-    if (drag) {
-        var data = curr['option']['series'][0]['data'];
-        var symbolSize = curr['option']['series'][0]['symbolSize'];
-
-        setTimeout(function() {
-            myChart.setOption(echarts.util.map(data, function(item, dataIndex) {
-                console.log("DATA");
-                console.log(item)
-                console.log("DATA INDEX")
-                console.log(dataIndex)
-                return {
-                  type: 'circle',
-                  position: myChart.convertToPixel('grid', item),
-                  shape: { cx: 0,
-                    cy: 0, r: symbolSize / 2 },
-                  invisible: true,
-                  draggable: true,
-                  ondrag: function (dx, dy) {
-                      console.log(dx, dy);
-                      onPointDragging(dataIndex, [dx, dy]);
-                  },
-                  onmousemove: echarts.util.curry(showTooltip, dataIndex),
-                  onmouseout: echarts.util.curry(hideTooltip, dataIndex),
-                  z: 100
-                };
-              }));
-        }, 0);
-
-        //console.log("Setting option");
-
-        //myChart.setOption(option);
-        
-            
-        
-        window.addEventListener('resize', function() {
-            myChart.setOption({
-                graphic: echarts.util.map(data, function(item, dataIndex) {
-                    return { position: myChart.convertToPixel('grid', item) };
-                })
-            });
-        });
-    }
-    console.log("option");
-    
-    
-    console.log(option);
-    window.onresize = function() {
-        myChart.resize();
-      };
 }
 
 function fillContentDiv(div, prev, curr) {
