@@ -5,6 +5,7 @@ var metadata = {};
 var stages = [];
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
+const path = document.getElementById("path").innerHTML;
 
 
 function readTextFile(file, callback) {
@@ -19,10 +20,11 @@ function readTextFile(file, callback) {
     rawFile.send(null);
 }
 
-readTextFile("/json/template.json", function (text) {
+readTextFile(path, function (text) {
     metadata = JSON.parse(text);
     stages = metadata['stages'];
 });
+
 
 function fadeDiv(id, in_or_out="in") {
     /*
@@ -236,7 +238,6 @@ function onPrev() {
     console.log("prev");
     onUpdate("prev");
 }
-
 
 
 
