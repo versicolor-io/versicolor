@@ -1,5 +1,5 @@
 # Site settings
-baseURL = "http://example.org/"
+baseURL = "https://versicolor.io"
 languageCode = "en-us"
 
 # Enter your tracking code to enable Google Analytics
@@ -12,7 +12,7 @@ disqusShortname = ""
 [markup]
   [markup.goldmark.renderer]
     unsafe=true
-    safeMode='unsafe' 
+    safeMode='unsafe'
 
 [params]
   # You can use Markdown syntax for urls [text](//url.to/source)
@@ -24,25 +24,18 @@ disqusShortname = ""
 
   # Provide your metadata here.
   name = "versicolor"
-  description = "Cool and catchy description goes here"
-
-  # Link custom assets relative to /static
-  custom_css = []
-  custom_js  = []
-  favicon    = "favicon.ico"
-
-  # Just a custom image variable, please define it in .md files for content.
-  image = ""
+  description = "An Interactive Journey through statistics, mathematics, physics, and more!"
+  favicon = "favicon.ico"
 
   # 404 error customization
   [params.error404]
     heading = "Page couldn't be found"
-    text = "Please visit [this page](/)"
+    text = "Back to [home](/)"
 
   # Navigation Section
   [params.navigation]
     title = "Versicolor"
-    subtitle = "cool catchy subtitle"
+    subtitle = "" # TODO
     menu = "Menu"
     # Optional logo as brand stored in img/
     # logo = "logo.png"
@@ -51,35 +44,24 @@ disqusShortname = ""
       name = "Home"
       url = "#"
 
-    [[params.navigation.links]]
-      name = "Blogs"
-      url = "blogs"
-
-    [[params.navigation.links]]
-      name = "Generic Blog"
-      url = "blogs/ipsum"
-
-    [[params.navigation.links]]
-      name = "Elements"
-      url = "elements.html"
-
-    # Add custom links here by uncommenting code below. To remove links just delete
-    # the [[params.navigation.links]] map associated with that link. Copy and paste
-    # code below if you need more links. Buttons work in the same way.
+    # # Add custom links here by uncommenting code below. To remove links just delete
+    # # the [[params.navigation.links]] map associated with that link. Copy and paste
+    # # code below if you need more links. Buttons work in the same way.
+    # #
+    # # This fills out the hamburger menu.
     # [[params.navigation.links]]
     #    name = "NameOfLink"
     #    url = "UrlOfLink"
-
-    # Button Style 1
-    [[params.navigation.button1]]
-      name = "Get Started"
-      url = "blogs"
-
-    # Button Style 2
-    [[params.navigation.button2]]
-      name = "Log In"
-      url = "#"
-
+    #
+    # # Button Style 1
+    # [[params.navigation.button1]]
+    #   name = "Get Started"
+    #   url = "blogs"
+    #
+    # # Button Style 2
+    # [[params.navigation.button2]]
+    #   name = "Log In"
+    #   url = "#"
 
   # Banner section
   [params.banner]
@@ -89,17 +71,16 @@ disqusShortname = ""
     subtitle = "AN INTERACTIVE JOURNEY THROUGH STATISTICS, MATHEMATICS, PHYSICS, AND MORE"
     buttonText = "Get Started"
 
-
   # Tiles Section
   [params.tiles]
     enable = true
     # Display your showcases here.
-    
+
     [[params.tiles.showcase]]
       title = "Regression"
       subtitle = "Get your knowledge in line"
       image = "menu1.jpg"
-      url = "blogs/aliquam"
+      url = "dev/regression"
 
     [[params.tiles.showcase]]
       title = "Clustering"
@@ -130,7 +111,6 @@ disqusShortname = ""
       subtitle = "...or is it?"
       image = "menu6.jpg"
       url = "blogs/ipsum"
-    # You can make more showcases by copy and pasting the code above
 
   [params.blog]
     # All blogs defined in their own files. You can find example blogs
@@ -141,20 +121,16 @@ disqusShortname = ""
 
   # Section Type Two
   [params.two]
-    enable = true
-    title = "Massa libero"
-    subtitle = """Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. 
-    Mauris aliquet magna magna sed nunc rhoncus pharetra. 
-    Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia pellentesque lorem ipsum dolor. 
-    Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis libero.
-    Mauris aliquet magna magna sed nunc rhoncus amet pharetra et feugiat tempus."""
-    buttonText = "Get Started"
+    enable = false
+    title = "Title"
+    subtitle = """A callout to some written text. Can be a paragraph or so."""
+    buttonText = "Button Text"
     url = "blogs"
 
 
   # Contact section
   [params.contact]
-    enable = true
+    enable = false
     buttonSend = "Send message"
     buttonClear = "Clear"
 
@@ -191,35 +167,35 @@ disqusShortname = ""
   # Footer section
   [params.footer]
     enable = true
-    copyright = "Company Name"
+    copyright = "Versicolor"
 
     # Uses font awesome icons
     [[params.footer.social]]
-      icon = "fa-twitter"
-      url= "https://www.twitter.com"
-      label = "Twitter"
-
-    [[params.footer.social]]
-      icon = "fa-facebook"
-      url= "https://www.facebook.com"
-      label = "Facebook"
-
-    [[params.footer.social]]
-      icon = "fa-instagram"
-      url= "https://www.instagram.com"
-      label = "Instagram"
-    
-    [[params.footer.social]]
       icon = "fa-github"
-      url= "https://www.github.com"
+      url = "https://www.github.com/versicolor"
       label = "GitHub"
 
-    [[params.footer.social]]
-      icon = "fa-linkedin"
-      url= "https://www.linkedin.com"
-      label = "LinkedIn"
+    # Socials don't render with any text by default, so having a line of person
+    # socials gets confusing.
+    #
+    # TODO: Figure out if we want socials and add better labels, or delete this
+    # comment block.
+    #
+    # [[params.footer.social]]
+    #   icon = "fa-twitter"
+    #   url = "https://twitter.com/beccalunch"
+    #   label = "Becca"
+
+    # [[params.footer.social]]
+    #   icon = "fa-twitter"
+    #   url = "https://www.twitter.com/StefanoWithAnF"
+    #   label = "Stefano"
+
+    # [[params.footer.social]]
+    #   icon = "fa-linkedin"
+    #   url = "https://www.linkedin.com/in/becca-lynch/"
+    #   label = "LinkedIn (Becca)"
 
     [[params.footer.quicklinks]]
-      text = "Design: "
-      url= "https://www.html5up.net"
-      alt = "HTML5 UP"
+      url = "https://beccalynch.com"
+      alt = "Becca Lynch"

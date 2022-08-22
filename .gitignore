@@ -1,0 +1,9 @@
+node_modules
+
+.vscode/*.log
+
+# This ignores the "compiled" Hugo site / Hugo output directory
+#
+# This may need to be removed if we decide to use the Github Actions + Pages
+# deploy method
+public/
