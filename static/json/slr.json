@@ -32,7 +32,8 @@
                 "type": "text",
                 "content": [
                     "To solve for the optimal \"line of best fit\", we want to find the intercept and slope which minimize the sum of squared errors between the data points and the fit lines.",
-                    "Before we learn the equations for this, try and tweak the parameters of the line to see how low you can get the sum of squared errors."
+                    "Before we learn the equations for this, try and tweak the parameters of the line to see how low you can get the sum of squared errors.",
+                    "Slope: <input id=\"input_slope\" type=\"number\" style=\"color:#585858;\" value=1 min=\"0\" step=\"0.1\" class=\"form-control\" id=\"amountInput\" onchange=\"replotLine(d2, 1, 0)\"> Intercept: <input id=\"input_intercept\" type=\"number\" style=\"color:#585858\" value=0.5 min=\"0\" step=\"0.1\" class=\"form-control\" id=\"amountInput\" onchange=\"replotLine(d2, 1, 0)\">"
                 ]
             },
             {
@@ -104,8 +105,8 @@
             {
                 "type": "text",
                 "content": [
-                    "Slope: <input id=\"input_slope\" type=\"number\" style=\"color:#585858;\" value=1 min=\"0\" step=\"0.1\" class=\"form-control\" id=\"amountInput\" onchange=\"replotLine(d2, 1)\">",
-                    "Intercept: <input id=\"input_intercept\" type=\"number\" style=\"color:#585858\" value=0.5 min=\"0\" step=\"0.1\" class=\"form-control\" id=\"amountInput\" onchange=\"replotLine(d2, 1)\">"
+                    "<h2 id=\"rss\"><b>Sum of squared residuals: </b></ph2>",
+                    "<script>computeRSS(0);</script>"
                 ]
             }
         ]

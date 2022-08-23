@@ -7,3 +7,5 @@ draft: false
 {{<tutorial
   path="/json/slr.json"
 >}}
+
+{{<slr>}}

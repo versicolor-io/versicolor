@@ -54,38 +54,9 @@ function hideTooltip(myChart, dataIndex) {
     myChart.dispatchAction({ type: 'hideTip' });
 }
 
-function replotLine(plotID, dataIndex) {
-    /*
-    Replots linear line in div <plotID> with data in <dataIndex>.
-    Currently only works to update a line constructed by two points.
-    */
-    const myChart = echarts.getInstanceByDom(document.getElementById('plt_div'));
-    var chartSeries = myChart.getOption('series')['series'];
-    const oldData = chartSeries[dataIndex]['data'];
-    const newSlope = document.getElementById('input_slope').value;
-    const newIntercept = document.getElementById('input_intercept').value;
-    var newData = $.extend( {}, oldData );
-    
-    
-    newData[0][1] = parseFloat(newIntercept);
-    newData[1][1] = parseFloat(newSlope * oldData[1][0]) + parseFloat(newIntercept);
-    // chartSeries[dataIndex]['data'] = newData;
-    console.log("old data");
-    console.log(oldData);
-    console.log("new data");
-    console.log(newData);
-
-    echarts.getInstanceByDom(document.getElementById('plt_div')).setOption(
-        {
-            series: chartSeries
-        }
-    );
-    echarts.getInstanceByDom(document.getElementById('plt_div')).resize();
-}
-
 function renderPlot(div, prev, curr) {
     // if previous was not a plot, we need to zero out the innerHTML
-    div.innerHTML = '<div id="plt_div"></div>';
+    div.innerHTML = '<div id="plt_div" style="height:100%"></div>';
     let plt_div = document.getElementById('plt_div');
     var option = curr['option'];
     let myChart = echarts.init(plt_div);
