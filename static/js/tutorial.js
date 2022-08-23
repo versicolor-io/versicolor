@@ -7,6 +7,9 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const path = document.getElementById("path").innerHTML;
 
+const defaultColor = '#242943';
+const filledColor = '#2e3450';
+
 
 function readTextFile(file, callback) {
     var rawFile = new XMLHttpRequest();
@@ -23,7 +26,6 @@ function readTextFile(file, callback) {
 readTextFile(path, function (text) {
     metadata = JSON.parse(text);
     stages = metadata['stages'];
-    console.log(stages)
 });
 
 
@@ -60,15 +62,13 @@ function renderPlot(div, prev, curr) {
     let myChart = echarts.init(plt_div);
     
     // check if we are doing interactions
-    const drag = curr['format']['drag'] || false;
+    var drag = false;
+    try { drag = curr['format']['drag'] || false; } catch (TypeError) {}
     
-    //console.log(JSON.stringify(curr['option']));
+    const data = curr['option']['series'][0]['data'];
+    const symbolSize = curr['option']['series'][0]['symbolSize'];
+
     if (drag) {
-        const data = curr['option']['series'][0]['data'];
-        const symbolSize = curr['option']['series'][0]['symbolSize'];
-
-        myChart.setOption(option);
-
         setTimeout(function() {
             myChart.setOption(
                 { graphic: 
@@ -91,9 +91,27 @@ function renderPlot(div, prev, curr) {
                         }
                     })
                 })});
-
-            myChart.setOption(option);
-        
+        myChart.setOption(option);
+    } else {
+        setTimeout(function() {
+            myChart.setOption(
+                { graphic: 
+                    echarts.util.map(data, function(item, dataIndex) {
+                        return {
+                            type: 'circle',
+                            position: myChart.convertToPixel('grid', item),
+                            shape: { 
+                                cx: 0,
+                                cy: 0,
+                                r: symbolSize / 2 },
+                            invisible: true,
+                            onmousemove: echarts.util.curry(showTooltip, myChart, dataIndex),
+                            onmouseout: echarts.util.curry(hideTooltip, myChart, dataIndex),
+                            z: 100
+                        }
+                    })
+                })});
+        myChart.setOption(option);
     }
         
     window.addEventListener('resize', function() {
@@ -126,18 +144,21 @@ function onPointDragging(data, dataIndex, myChart, pos) {
 }
 
 function fillContentDiv(div, prev, curr) {
-    var type = curr['type'];
+    try {
+        var type = curr['type'];
+        div.style.backgroundColor = filledColor;
+    } catch (TypeError) {
+        // this div is empty, so we will fill with the default color
+        div.style.backgroundColor = defaultColor;
+    }
     switch(type) {
         case 'text':
-            console.log('in text')
             div.innerHTML = curr.content.join('<br><br>');
             break;
         case 'plot':
-            console.log('in plot');
             renderPlot(div, prev, curr);
             break;
         case 'image':
-            console.log('in image');
             div.innerHTML = "<img src=" + curr['path'] + " />"
     }
 }
@@ -153,7 +174,6 @@ function fillContentAll() {
 
         var prev = prev_stage[x] || {};
         var curr = curr_stage[x];
-
         setTimeout(fillContentDiv, 500, div, prev, curr);
     }
 }
@@ -167,11 +187,13 @@ function transitionStage(in_or_out) {
     */
     for (const x of Array(3).keys()) {
         d = curr_stage[x];
-        if (d['format'] !== undefined && 
-            d['format']['fade'] !== undefined && 
-            d['format']['fade'] == false) {
-            continue;
-        }
+        try {
+            if (d['format'] !== undefined && 
+                d['format']['fade'] !== undefined && 
+                d['format']['fade'] == false) {
+                continue;
+            }
+        } catch (TypeError) { continue; }
         var id = "#d".concat((x + 1).toString());
         fadeDiv(id, in_or_out);
     }
@@ -213,7 +235,6 @@ function onUpdate(status) {
     var stage_idx = document.getElementById('stage').innerHTML;
     if ((stage_idx == 0 && status == "prev") ||
         (stage_idx == (stages.length - 1) && status == "next")) {
-            console.log("cannot do")
             return
         }
 
@@ -231,12 +252,10 @@ function onUpdate(status) {
 }
 
 function onNext() {
-    console.log("next");
     onUpdate("next");
 }
 
 function onPrev() {
-    console.log("prev");
     onUpdate("prev");
 }
 
@@ -253,7 +272,6 @@ function main() {
     document.getElementById('stage').innerHTML = stage_idx;
 
     curr_stage = stages[stage_idx];
-    console.log(curr_stage);
     // update content
     fillContentAll();
 

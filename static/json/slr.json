@@ -5,10 +5,94 @@
             {
                 "type": "text",
                 "content": [
-                    "This is the start of a tutorial on simple linear regression.", 
-                    "It's not done yet!.",
-                    "Check back later."
+                    "A common question in data science is whether or not two variables are related, and in what way.", 
+                    "<b>Regression</b> is a technique used to estimate the relationship between two variables."
                 ]
+            },
+            {
+                "type": "image",
+                "path": "/img/tutorials/slr/example.gif"
+            }
+        ],
+        [
+            {
+                "type": "image",
+                "path": "/img/tutorials/slr/example_2.gif"
+            },
+            {
+                "type": "text",
+                "content": [
+                    "Simple linear regression is the technique used to fit a line to a dataset.",
+                    "This fit line tells us information about the relationship between the <b>independent</b> variable, X, and the <b>dependent</b> variable, Y."
+                ]
+            }
+        ],
+        [
+            {
+                "type": "text",
+                "content": [
+                    "To solve for the optimal \"line of best fit\", we want to find the intercept and slope which minimize the sum of squared errors between the data points and the fit lines.",
+                    "Before we learn the equations for this, try and tweak the parameters of the line to see how low you can get the sum of squared errors."
+                ]
+            },
+            {
+                "type": "plot",
+                "option": {
+                    "xAxis": {
+                        "min": 0,
+                        "max": 10,
+                        "type": "value",
+                        "axisLine": { 
+                            "onZero": false,
+                            "lineStyle": {"color": "white"}
+                        },
+                        "name": "Monthly Advertising ($1M)",
+                        "nameLocation": "middle",
+                        "nameGap": 30,
+                        "splitLine":{
+                            "show": false
+                        }
+                    },
+                    "yAxis": {
+                        "min": 0,
+                        "max": 10,
+                        "type": "value",
+                        "axisLine": { 
+                            "onZero": false,
+                            "lineStyle": {"color": "white"}
+                        },
+                        "axisLabel": {
+                            "interval": 0,
+                            "rotate": 90
+                        },
+                        "name": "Total Sales ($1M)",
+                        "nameLocation": "center",
+                        "nameGap": 30,
+                        "nameRotate": 90,
+                        "splitLine":{
+                            "show": false
+                        }
+                    },
+                    "series": [
+                        {
+                            "id": "a",
+                            "type": "scatter",
+                            "symbolSize": 20,
+                            "data": [
+                                [1,2],
+                                [2,4],
+                                [3.4, 5],
+                                [5, 4.1],
+                                [6, 7],
+                                [8, 9],
+                                [8, 7.7]
+                            ]
+                        }
+                    ],
+                    "grid": {
+                        "containLabel": true
+                    }
+                }
             }
         ]
     ]
