@@ -1,0 +1,6 @@
+# Redirect domain aliases to primary domain
+https://www.versicolor.io/* https://verisocolor.io/:splat 301!
+
+# Redirect primary netlify subdomain to primary alias
+# https://versicolor-io.netlify.com/* https://versicolor.io/:splat 301!
+
